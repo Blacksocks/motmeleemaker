@@ -18,35 +18,6 @@
 					case 2:y++;break;case 3:x--;y++;break;\
 					case 4:x--;break;case 5:x--;y--;break;\
 					case 6:y--;break;case 7:x++;y--;break;}
-/* Calculate dimenstion of non empty window of grid
-** winX, winY, winW, winH: window dimensions
-** grid: grid array
-** gridLenX, gridLenY: grid size
-*/
-void recalculateWin(
-	int * 			winX1,
-	int * 			winY1,
-	int * 			winX2,
-	int * 			winY2,
-	char * 			grid,
-	int 			gridLenX,
-	int 			gridLenY
-){
-	*winX1 = gridLenX - 1;
-	*winY1 = gridLenY - 1;
-	*winX2 = 0;
-	*winY2 = 0;
-	for(int tmpY = 0; tmpY < gridLenY; tmpY++)
-		for(int tmpX = 0; tmpX < gridLenX; tmpX++)
-		{
-			if(grid[gridLenX*tmpY + tmpX] == EMPTY)
-				continue;
-			if(tmpX < *winX1) *winX1 = tmpX;
-			if(tmpX > *winX2) *winX2 = tmpX;
-			if(tmpY < *winY1) *winY1 = tmpY;
-			if(tmpY > *winY2) *winY2 = tmpY;
-		}
-}
 
 /* Generate a "mot melee" game from strings array
 ** grid: 			output array of char
@@ -81,32 +52,46 @@ void gridGenerator(
 		grid[gridLenX*posY+posX] = list[0][i];
 		ROT(rot,posX,posY)
 	}
-	// calcul minimum window where values of grid are not null
-	int winX1, winY1, winX2, winY2;
-	recalculateWin(&winX1, &winY1, &winX2, &winY2, grid, gridLenX, gridLenY);
-	printf("win: [%d,%d] [%d,%d]\n", winX1, winY1, winX2, winY2);
 	int maxPosX, minPosX, maxPosY, minPosY;
+	int wordBreak; // is word into grid ?
+	int emptyBreak; // used for first loop
+	int tmpX, tmpY;
 	for(int i = 0; i < listLen; i++)
 	{
+		wordBreak = 0;
 		// init rotation
 		rot = rand() % 8;
 		// init position
 		minPosX = BTW(rot,len[i],3,5);
-		maxPosX = gridLenX - NEQ2(rot,len[i],2,6); // pos X length
+		maxPosX = gridLenX - NEQ2(rot,len[i],2,6); // size X
 		minPosY = BTW(rot,len[i],5,7);
-		maxPosY = gridLenY - NEQ2(rot,len[i],0,4); // pos Y length
+		maxPosY = gridLenY - NEQ2(rot,len[i],0,4); // size Y
 		// find random position
 		posX = minPosX + rand() % maxPosX;
 		posY = minPosY + rand() % maxPosY;
 		maxPosX += minPosX;
 		maxPosY += minPosY;
 		// first loop; try to insert new word into a previous word
-		for(int r = 0; r < 7; r++)
+		for(int r = 0; r < 7 && !wordBreak; r++)
 		{
-			for(int y = winY1; y < winY2; y++)
+			for(int y = minPosY; y <= maxPosY && !wordBreak; y++)
 			{
-				for(int x = winX1; x < winX2; x++)
+				for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
 				{
+					// is word into another ?
+					tmpX = x; tmpY = y;
+					emptyBreak = 1;
+					for(int j = 0; j < len[i]; j++)
+					{
+						if(grid[gridLenX*posY+tmpY] == EMPTY)
+							ROT(rot,tmpX,tmpY)
+						else
+							emptyBreak = 0;
+					}
+					// if not, pass to next position and/or rotation
+					if(emptyBreak)
+						continue;
+
 					// MUST BE COMPLETED
 
 					if(++posX > maxPosX)
@@ -119,11 +104,11 @@ void gridGenerator(
 				rot = 0;
 		}
 		// second loop; try to insert new word everywhere in the grid
-		for(int r = 0; r < 7; r++)
+		for(int r = 0; r < 7 && !wordBreak; r++)
 		{
-			for(int y = winY1; y < winY2; y++)
+			for(int y = minPosY; y <= maxPosY && !wordBreak; y++)
 			{
-				for(int x = winX1; x < winX2; x++)
+				for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
 				{
 					// MUST BE COMPLETED
 
