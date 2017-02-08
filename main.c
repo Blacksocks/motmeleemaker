@@ -19,6 +19,28 @@
 					case 4:x--;break;case 5:x--;y--;break;\
 					case 6:y--;break;case 7:x++;y--;break;}
 
+/* Sort a list of string from longer to smaller
+** list: 		list where strings are
+** len: 		array which contains size of strings
+** listLen: 	length of list array
+*/
+void sort(char ** list, int * len, const int listLen)
+{
+	char * tmpStr;
+	int tmpIdx;
+	for(int i = 0; i < listLen - 1; i++)
+		for(int j = 0; j < listLen - 1 - i; j++)
+			if(len[j] < len[j+1])
+			{
+				tmpStr = list[j];
+				tmpIdx = len[j];
+				list[j] = list[j+1];
+				len[j] = len[j+1];
+				list[j+1] = tmpStr;
+				len[j+1] = tmpIdx;
+			}
+}
+
 /* Generate a "mot melee" game from strings array
 ** grid: 			output array of char
 ** gridLenX: 		grid width
@@ -31,18 +53,10 @@ void gridGenerator(
 	char * 			grid,
 	const int 		gridLenX,
 	const int 		gridLenY,
-	const char ** 	list,
+	char ** 		list,
 	const int * 	len,
 	const int 		listLen
 ){
-
-
-
-	// MUST TRIER LIST FROM LONGER TO SMALL WORD
-
-
-
-
 	// initialise random function
 	time_t t;
 	srand((unsigned) time(&t));
@@ -51,15 +65,18 @@ void gridGenerator(
 	// turn in clockwise
 	int rot = rand() % 8;
 	// get random position for first word
-	int posX = BTW(rot,len[0],3,5) + rand() % (gridLenX - NEQ2(rot,len[0],2,6));
-	int posY = BTW(rot,len[0],5,7) + rand() % (gridLenY - NEQ2(rot,len[0],0,4));
-	printf("r:%d, x:%d, y:%d\n", rot, posX, posY);
+	int posX, posY;
+	if(len[0] == gridLenX) posX = BTW(rot,len[0]-1,3,5);
+	else posX = BTW(rot,len[0]-1,3,5) + rand() % (gridLenX - 1 - NEQ2(rot,len[0]-1,2,6));
+	if(len[0] == gridLenY) posY = BTW(rot,len[0]-1,5,7);
+	else posY = BTW(rot,len[0]-1,5,7) + rand() % (gridLenY - 1 - NEQ2(rot,len[0]-1,0,4));
 	// write first word into grid
 	for(int i = 0; i < len[0]; i++)
 	{
 		grid[gridLenX*posY+posX] = list[0][i];
 		ROT(rot,posX,posY)
 	}
+	rot = listLen;
 	int maxPosX, minPosX, maxPosY, minPosY;
 	int wordBreak; // is word into grid ?
 	int emptyBreak; // used for first loop
@@ -84,8 +101,6 @@ void gridGenerator(
 			else posY = minPosY + rand() % maxPosY;
 			maxPosX += minPosX;
 			maxPosY += minPosY;
-			printf("%s - rot:%d ", list[i], rot);
-			printf("minPosX:%d minPosY:%d maxPosX:%d maxPosY:%d\n", minPosX, minPosY, maxPosX, maxPosY);
 			for(int y = minPosY; y <= maxPosY && !wordBreak; y++)
 			{
 				for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
@@ -112,10 +127,6 @@ void gridGenerator(
 							else
 								emptyBreak = 0;
 						}
-						if(i == 2)
-							printf("posX:%d posY:%d ", posX, posY);
-						if(i == 2)
-							printf("emptyBreak:%d\n", emptyBreak);
 						// if word can be here, pass to next word
 						if(emptyBreak)
 						{
@@ -123,7 +134,6 @@ void gridGenerator(
 							wordBreak = 1;
 							// and write it into grid
 							tmpX = posX; tmpY = posY;
-							printf("r:%d, x:%d, y:%d\n", rot, posX, posY);
 							for(int j = 0; j < len[i]; j++)
 							{
 								grid[gridLenX*tmpY+tmpX] = list[i][j];
@@ -182,21 +192,14 @@ void gridGenerator(
 int main(void)
 {
 	// input strings
-	const char * list[NBWORDS];
+	char * list[NBWORDS];
 	list[0] = "test";
 	list[1] = "bonjour";
 	list[2] = "space space";
 	list[3] = "thisisaverylongword";
 	list[4] = "littleword";
 	// length of input string
-	const int listLen[] = {4, 7, 11, 19, 10};
-	// print input words
-	for(int i = 0; i < NBWORDS; i++)
-	{
-		for(int j = 0; j < listLen[i]; j++)
-			printf("%c", list[i][j]);
-		printf("\n");
-	}
+	int listLen[] = {4, 7, 11, 19, 10};
 	// grid length
 	int gridLenX = listLen[0]; // max of word length
 	for(int i = 1; i < NBWORDS; i++)
@@ -212,9 +215,13 @@ int main(void)
 	char grid[gridLen];
 	for(int i = 0; i < gridLen; i++)
 		grid[i] = EMPTY;
-
+	// sort list from longer to shorter
+	sort(list, listLen, NBWORDS);
+	// print input strings ordered
+	for(int i = 0; i < NBWORDS; i++)
+		printf("%s\n", list[i]);
+	// generate grid
 	gridGenerator(grid, gridLenX, gridLenY, list, listLen, NBWORDS);
-
 	// print grid
 	printf("  .");
 	for(int i = 0; i < gridLenX; i++)
