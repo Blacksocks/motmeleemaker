@@ -35,6 +35,14 @@ void gridGenerator(
 	const int * 	len,
 	const int 		listLen
 ){
+
+
+
+	// MUST TRIER LIST FROM LONGER TO SMALL WORD
+
+
+
+
 	// initialise random function
 	time_t t;
 	srand((unsigned) time(&t));
@@ -56,68 +64,115 @@ void gridGenerator(
 	int wordBreak; // is word into grid ?
 	int emptyBreak; // used for first loop
 	int tmpX, tmpY;
-	for(int i = 0; i < listLen; i++)
+	for(int i = 1; i < listLen; i++)
 	{
 		wordBreak = 0;
 		// init rotation
 		rot = rand() % 8;
-		// init position
-		minPosX = BTW(rot,len[i],3,5);
-		maxPosX = gridLenX - NEQ2(rot,len[i],2,6); // size X
-		minPosY = BTW(rot,len[i],5,7);
-		maxPosY = gridLenY - NEQ2(rot,len[i],0,4); // size Y
-		// find random position
-		posX = minPosX + rand() % maxPosX;
-		posY = minPosY + rand() % maxPosY;
-		maxPosX += minPosX;
-		maxPosY += minPosY;
 		// first loop; try to insert new word into a previous word
 		for(int r = 0; r < 7 && !wordBreak; r++)
 		{
+			// init position
+			minPosX = BTW(rot,len[i]-1,3,5);
+			maxPosX = gridLenX - 1 - NEQ2(rot,len[i]-1,2,6); // size X
+			minPosY = BTW(rot,len[i]-1,5,7);
+			maxPosY = gridLenY - 1 - NEQ2(rot,len[i]-1,0,4); // size Y
+			// find random position
+			if(maxPosX == 0) posX = minPosX;
+			else posX = minPosX + rand() % maxPosX;
+			if(maxPosY == 0) posY = minPosY;
+			else posY = minPosY + rand() % maxPosY;
+			maxPosX += minPosX;
+			maxPosY += minPosY;
+			printf("%s - rot:%d ", list[i], rot);
+			printf("minPosX:%d minPosY:%d maxPosX:%d maxPosY:%d\n", minPosX, minPosY, maxPosX, maxPosY);
 			for(int y = minPosY; y <= maxPosY && !wordBreak; y++)
 			{
 				for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
 				{
 					// is word into another ?
-					tmpX = x; tmpY = y;
+					tmpX = posX; tmpY = posY;
 					emptyBreak = 1;
 					for(int j = 0; j < len[i]; j++)
-					{
-						if(grid[gridLenX*posY+tmpY] == EMPTY)
+						if(grid[gridLenX*tmpY+tmpX] == EMPTY)
 							ROT(rot,tmpX,tmpY)
 						else
 							emptyBreak = 0;
-					}
 					// if not, pass to next position and/or rotation
-					if(emptyBreak)
-						continue;
-
-					// MUST BE COMPLETED
-
+					if(!emptyBreak)
+					{
+						// check if word could be here
+						tmpX = posX; tmpY = posY;
+						emptyBreak = 1;
+						for(int j = 0; j < len[i]; j++)
+						{
+							char gridVal = grid[gridLenX*tmpY+tmpX];
+							if(gridVal == EMPTY || gridVal == list[i][j])
+								ROT(rot,tmpX,tmpY)
+							else
+								emptyBreak = 0;
+						}
+						if(i == 2)
+							printf("posX:%d posY:%d ", posX, posY);
+						if(i == 2)
+							printf("emptyBreak:%d\n", emptyBreak);
+						// if word can be here, pass to next word
+						if(emptyBreak)
+						{
+							// pass to next word
+							wordBreak = 1;
+							// and write it into grid
+							tmpX = posX; tmpY = posY;
+							printf("r:%d, x:%d, y:%d\n", rot, posX, posY);
+							for(int j = 0; j < len[i]; j++)
+							{
+								grid[gridLenX*tmpY+tmpX] = list[i][j];
+								ROT(rot,tmpX,tmpY)
+							}
+						}
+					}
+					// increment posX
 					if(++posX > maxPosX)
 						posX = minPosX;
 				}
+				// increment posY
 				if(++posY > maxPosY)
 					posY = minPosY;
 			}
+			// increment rot
 			if(++rot == 8)
 				rot = 0;
 		}
 		// second loop; try to insert new word everywhere in the grid
 		for(int r = 0; r < 7 && !wordBreak; r++)
 		{
+			// init position
+			minPosX = BTW(rot,len[i]-1,3,5);
+			maxPosX = gridLenX - 1 - NEQ2(rot,len[i]-1,2,6); // size X
+			minPosY = BTW(rot,len[i]-1,5,7);
+			maxPosY = gridLenY - 1 - NEQ2(rot,len[i]-1,0,4); // size Y
+			// find random position
+			if(maxPosX == 0) posX = minPosX;
+			else posX = minPosX + rand() % maxPosX;
+			if(maxPosY == 0) posY = minPosY;
+			else posY = minPosY + rand() % maxPosY;
+			maxPosX += minPosX;
+			maxPosY += minPosY;
 			for(int y = minPosY; y <= maxPosY && !wordBreak; y++)
 			{
 				for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
 				{
 					// MUST BE COMPLETED
 
+					// increment posX
 					if(++posX > maxPosX)
 						posX = minPosX;
 				}
+				// increment posY
 				if(++posY > maxPosY)
 					posY = minPosY;
 			}
+			// increment rot
 			if(++rot == 8)
 				rot = 0;
 		}
@@ -161,8 +216,13 @@ int main(void)
 	gridGenerator(grid, gridLenX, gridLenY, list, listLen, NBWORDS);
 
 	// print grid
+	printf("  .");
+	for(int i = 0; i < gridLenX; i++)
+		printf("%c%d", (i < 10) ? ' ' : i / 10 + '0', i % 10);
+	printf("\n");
 	for(int j = 0; j < gridLenY; j++)
 	{
+		printf("%c%d| ", (j < 10) ? ' ' : j / 10 + '0', j % 10);
 		for(int i = 0; i < gridLenX; i++)
 			printf("%c ", grid[j*gridLenX + i]);
 		printf("\n");
