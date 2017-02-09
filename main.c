@@ -184,9 +184,26 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 	return 1;
 }
 
-void fillGrid()
+/* Fill grid with random letters
+** grid:		grid here the ord must be insterted
+** gridLenX:	width of the grid
+** gridLenY:	height of the grid
+** letters:		characters which could be used
+** lettersLen:	lenght of letters array
+*/
+void fillGrid(char * grid, int gridLenX, int gridLenY, char * letters, int letterLen)
 {
-
+	int letterIdx;
+	for(int i = 0; i < gridLenY; i++)
+		for(int j = 0; j < gridLenX; j++)
+		{
+			// if character isn't EMPTY, don't fill it
+			if(grid[i*gridLenX+j] != EMPTY)
+				continue;
+			// get random letter into letters and fill grid with it
+			letterIdx = rand() % letterLen;
+			grid[i*gridLenX+j] = letters[letterIdx];
+		}
 }
 
 
@@ -213,7 +230,9 @@ int gridGenerator(
 	for(int i = 0; i < listLen; i++)
 		if(!insertWord(grid, gridLenX, gridLenY, list[i], len[i]))
 			return 0;
-	fillGrid();
+	char * letters = "0123456789";
+	int lettersLen =  10;
+	fillGrid(grid, gridLenX, gridLenY, letters, lettersLen);
 	return 1;
 }
 
