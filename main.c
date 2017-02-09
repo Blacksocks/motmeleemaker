@@ -58,6 +58,9 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 	int posX, posY;
 	wordBreak = 0;
 	// init rotation
+	// rotation is a random number between 0 and 7
+	// 0: normal reading; from left to right
+	// turn in clockwise
 	int rot = rand() % 8;
 	// first loop; try to insert new word into a previous word
 	for(int r = 0; r < 7 && !wordBreak; r++)
@@ -207,27 +210,31 @@ int gridGenerator(
 	// initialise random function
 	time_t t;
 	srand((unsigned) time(&t));
-	// rotation is a random number between 0 and 7
-	// 0: normal reading; from left to right
-	// turn in clockwise
-	/*int rot = rand() % 8;
-	// get random position for first word
-	int posX, posY;
-	if(len[0] == gridLenX) posX = BTW(rot,len[0]-1,3,5);
-	else posX = BTW(rot,len[0]-1,3,5) + rand() % (gridLenX - 1 - NEQ2(rot,len[0]-1,2,6));
-	if(len[0] == gridLenY) posY = BTW(rot,len[0]-1,5,7);
-	else posY = BTW(rot,len[0]-1,5,7) + rand() % (gridLenY - 1 - NEQ2(rot,len[0]-1,0,4));
-	// write first word into grid
-	for(int i = 0; i < len[0]; i++)
-	{
-		grid[gridLenX*posY+posX] = list[0][i];
-		ROT(rot,posX,posY)
-	}
-	*/for(int i = 0; i < listLen; i++)
+	for(int i = 0; i < listLen; i++)
 		if(!insertWord(grid, gridLenX, gridLenY, list[i], len[i]))
 			return 0;
 	fillGrid();
 	return 1;
+}
+
+/* Grid printer function
+** grid:			grid displayed
+** gridLenX: 		grid width
+** gridLenY: 		grid height
+*/
+void print(char * grid, int gridLenX, int gridLenY)
+{
+	printf("  .");
+	for(int i = 0; i < gridLenX; i++)
+		printf("%c%d", (i < 10) ? ' ' : i / 10 + '0', i % 10);
+	printf("\n");
+	for(int j = 0; j < gridLenY; j++)
+	{
+		printf("%c%d| ", (j < 10) ? ' ' : j / 10 + '0', j % 10);
+		for(int i = 0; i < gridLenX; i++)
+			printf("%c ", grid[j*gridLenX + i]);
+		printf("\n");
+	}
 }
 
 int main(void)
@@ -263,17 +270,6 @@ int main(void)
 		printf("%s\n", list[i]);
 	// generate grid
 	gridGenerator(grid, gridLenX, gridLenY, list, listLen, NBWORDS);
-	// print grid
-	printf("  .");
-	for(int i = 0; i < gridLenX; i++)
-		printf("%c%d", (i < 10) ? ' ' : i / 10 + '0', i % 10);
-	printf("\n");
-	for(int j = 0; j < gridLenY; j++)
-	{
-		printf("%c%d| ", (j < 10) ? ' ' : j / 10 + '0', j % 10);
-		for(int i = 0; i < gridLenX; i++)
-			printf("%c ", grid[j*gridLenX + i]);
-		printf("\n");
-	}
+	print(grid, gridLenX, gridLenY);
 	return 0;
 }
