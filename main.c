@@ -145,8 +145,27 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 		{
 			for(int x = minPosX; x <= maxPosX && !wordBreak; x++)
 			{
-				// MUST BE COMPLETED
-
+				// is word into another ?
+				tmpX = posX; tmpY = posY;
+				emptyBreak = 1;
+				for(int j = 0; j < wordLen; j++)
+					if(grid[gridLenX*tmpY+tmpX] == EMPTY)
+						ROT(rot,tmpX,tmpY)
+					else
+						emptyBreak = 0;
+				// if yes, print it and pass to next word
+				if(emptyBreak)
+				{
+					// pass to next word
+					wordBreak = 1;
+					// and write it into grid
+					tmpX = posX; tmpY = posY;
+					for(int j = 0; j < wordLen; j++)
+					{
+						grid[gridLenX*tmpY+tmpX] = word[j];
+						ROT(rot,tmpX,tmpY)
+					}
+				}
 				// increment posX
 				if(++posX > maxPosX)
 					posX = minPosX;
@@ -191,7 +210,7 @@ int gridGenerator(
 	// rotation is a random number between 0 and 7
 	// 0: normal reading; from left to right
 	// turn in clockwise
-	int rot = rand() % 8;
+	/*int rot = rand() % 8;
 	// get random position for first word
 	int posX, posY;
 	if(len[0] == gridLenX) posX = BTW(rot,len[0]-1,3,5);
@@ -204,7 +223,7 @@ int gridGenerator(
 		grid[gridLenX*posY+posX] = list[0][i];
 		ROT(rot,posX,posY)
 	}
-	for(int i = 1; i < listLen; i++)
+	*/for(int i = 0; i < listLen; i++)
 		if(!insertWord(grid, gridLenX, gridLenY, list[i], len[i]))
 			return 0;
 	fillGrid();
