@@ -4,6 +4,8 @@
 
 #define NBWORDS		(5)
 #define EMPTY		'.'
+#define NBTRY		(10)
+#define MAXLETLEN	(256)
 
 // get random value on x axis
 // r:rotation, l: string length, m: maximum
@@ -18,6 +20,14 @@
 					case 2:y++;break;case 3:x--;y++;break;\
 					case 4:x--;break;case 5:x--;y--;break;\
 					case 6:y--;break;case 7:x++;y--;break;}
+
+/* Return absolute value
+** x:			input value
+*/
+int abs(int x)
+{
+	return(x >= 0 ? x : -x);
+}
 
 /* Sort a list of string from longer to smaller
 ** list: 		list where strings are
@@ -193,7 +203,6 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 */
 void fillGrid(char * grid, int gridLenX, int gridLenY, char * letters, int letterLen)
 {
-	int letterIdx;
 	for(int i = 0; i < gridLenY; i++)
 		for(int j = 0; j < gridLenX; j++)
 		{
@@ -201,8 +210,7 @@ void fillGrid(char * grid, int gridLenX, int gridLenY, char * letters, int lette
 			if(grid[i*gridLenX+j] != EMPTY)
 				continue;
 			// get random letter into letters and fill grid with it
-			letterIdx = rand() % letterLen;
-			grid[i*gridLenX+j] = letters[letterIdx];
+			grid[i*gridLenX+j] = letters[rand() % letterLen];
 		}
 }
 
@@ -224,15 +232,9 @@ int gridGenerator(
 	const int * 	len,
 	const int 		listLen
 ){
-	// initialise random function
-	time_t t;
-	srand((unsigned) time(&t));
 	for(int i = 0; i < listLen; i++)
 		if(!insertWord(grid, gridLenX, gridLenY, list[i], len[i]))
 			return 0;
-	char * letters = "0123456789";
-	int lettersLen =  10;
-	fillGrid(grid, gridLenX, gridLenY, letters, lettersLen);
 	return 1;
 }
 
@@ -256,30 +258,146 @@ void print(char * grid, int gridLenX, int gridLenY)
 	}
 }
 
-int main(void)
+/* Copy a grid into another
+** grid1;			output grid
+** grid2:			input grid
+** gridLenX: 		grid width
+** gridLenY: 		grid height
+*/
+void gridCopy(char * grid1, const char * grid2, int gridLenX, int gridLenY)
+{
+	for(int j = 0; j < gridLenY; j++)
+		for(int i = 0; i < gridLenX; i++)
+			grid1[j*gridLenX+i] = grid2[j*gridLenX+i];
+}
+
+/* Calculate dimenstion of non empty window of grid
+** grid:			grid displayed
+** gridLenX: 		grid width
+** gridLenY: 		grid height
+** x1:				window X position
+** y1:				window Y position
+** x2:				window width + window X position
+** y2:				window height + window Y positin
+*/
+void getGridSize(char * grid, int gridLenX, int gridLenY, int * x1, int * y1, int * x2, int * y2)
+{
+	*x1 = gridLenX - 1;
+	*y1 = gridLenY - 1;
+	*x2 = 0;
+	*y2 = 0;
+	for(int tmpY = 0; tmpY < gridLenY; tmpY++)
+		for(int tmpX = 0; tmpX < gridLenX; tmpX++)
+		{
+			if(grid[gridLenX*tmpY + tmpX] == EMPTY)
+				continue;
+			if(tmpX < *x1) *x1 = tmpX;
+			if(tmpX > *x2) *x2 = tmpX;
+			if(tmpY < *y1) *y1 = tmpY;
+			if(tmpY > *y2) *y2 = tmpY;
+		}
+}
+
+/* Resize grid
+** grid:			grid displayed
+** gridLenX: 		grid width
+** gridLenY: 		grid height
+*/
+void resizeGrid(char * grid, int * gridLenX, int * gridLenY)
+{
+	int x1, y1, x2, y2;
+	getGridSize(grid, *gridLenX, *gridLenY, &x1, &y1, &x2, &y2);
+	int w = x2 - x1 + 1;
+	int h = y2 - y1 + 1;
+	// shift grid [-x1, -y1]
+	for(int j = 0; j < h; j++)
+		for(int i = 0; i < w; i++)
+			grid[*gridLenX*j+i] = grid[*gridLenX*(j+y1)+i+x1];
+	// reset rest of the grid
+	for(int j = 0; j < *gridLenY; j++)
+		for(int i = 0; i < *gridLenX; i++)
+			if(i >= w || j >= h)
+				grid[*gridLenX*j+i] = EMPTY;
+	*gridLenX = w;
+	*gridLenY = h;
+}
+
+/* Get letters set from set for words
+** list: 			main input, array of strings
+** len:				len of each string
+** listLen: 		number of words
+** let:				array of letters
+** letlen:			size of lettesr array
+*/
+void getLettersFromWords(char ** list, int * len, int listLen, char * let, int * letLen)
+{
+	*letLen = 0;
+	for(int wordIdx = 0; wordIdx < listLen; wordIdx++)
+		for(int letIdx = 0; letIdx < len[wordIdx]; letIdx++)
+		{
+			char c = list[wordIdx][letIdx];
+			int contains = 0;
+			for(int i = 0; i < *letLen; i++)
+				if(c == let[i])
+				{
+					contains = 1;
+					break;
+				}
+			if(contains)
+				continue;
+			let[(*letLen)++] = c;
+			if(*letLen == MAXLETLEN - 1)
+			{
+				printf("[ERROR] Too much letter are used\n");
+				return;
+			}
+		}
+}
+
+int main(int argc, char * argv[])
 {
 	// input strings
 	char * list[NBWORDS];
 	list[0] = "test";
 	list[1] = "bonjour";
-	list[2] = "space space";
+	list[2] = "spacespace";
 	list[3] = "thisisaverylongword";
 	list[4] = "littleword";
 	// length of input string
-	int listLen[] = {4, 7, 11, 19, 10};
-	// grid length
-	int gridLenX = listLen[0]; // max of word length
-	for(int i = 1; i < NBWORDS; i++)
-		if(listLen[i] > gridLenX)
-			gridLenX = listLen[i];
-	int gridLenY = NBWORDS;
-	if(gridLenX > gridLenY) // make square grid
-		gridLenY = gridLenX;
+	int listLen[] = {4, 7, 10, 19, 10};
+	if(argc < 2 || argc > 3)
+	{
+		printf("Usage: main filein[, size]\n  filein: (string) input text file with one word per line\n  size: (int) size of the square grid\n");
+		return 1;
+	}
 	else
-		gridLenX = gridLenY;
+	{
+		// get word list from file
+	}
+	int gridLenX, gridLenY;
+	if(argc == 3)
+	{
+		// set grid length
+		gridLenX = atoi(argv[2]);
+		gridLenY = gridLenX;
+	}
+	else
+	{
+		// set grid length
+		gridLenX = listLen[0]; // max of word length
+		for(int i = 1; i < NBWORDS; i++)
+			if(listLen[i] > gridLenX)
+				gridLenX = listLen[i];
+		gridLenY = NBWORDS;
+		if(gridLenX > gridLenY) // make square grid
+			gridLenY = gridLenX;
+		else
+			gridLenX = gridLenY;
+	}
 	const int gridLen = gridLenX * gridLenY;
 	// init grid
 	char grid[gridLen];
+	char tmpGrid[gridLen];
 	for(int i = 0; i < gridLen; i++)
 		grid[i] = EMPTY;
 	// sort list from longer to shorter
@@ -287,8 +405,48 @@ int main(void)
 	// print input strings ordered
 	for(int i = 0; i < NBWORDS; i++)
 		printf("%s\n", list[i]);
+	// initialise random function
+	time_t t;
+	srand((unsigned) time(&t));
+	// coefficient which caracterise grid dimensions
+	// penalise no square grids
+	int dimCoef = gridLenX + gridLenY + abs(gridLenX - gridLenY);
 	// generate grid
-	gridGenerator(grid, gridLenX, gridLenY, list, listLen, NBWORDS);
+	int noResult = 1;
+	// Several try are made and the best is kept in order to find a small grid
+	for(int i = 0; i < NBTRY; i++)
+	{
+		for(int i = 0; i < gridLen; i++)
+			tmpGrid[i] = EMPTY;
+		int success = gridGenerator(tmpGrid, gridLenX, gridLenY, list, listLen, NBWORDS);
+		if(success)
+		{
+			int tmpX1, tmpY1, tmpX2, tmpY2;
+			getGridSize(tmpGrid, gridLenX, gridLenY, &tmpX1, &tmpY1, &tmpX2, &tmpY2);
+			// if tmpGrid dimensions are smaller than grid ones
+			int tmpW = tmpX2 - tmpX1;
+			int tmpH = tmpY2 - tmpY1;
+			int tmpDimCoef = tmpW + tmpH + abs(tmpW - tmpH);
+			if(tmpDimCoef < dimCoef || noResult)
+			{
+				// replace grid into tmpGrid
+				gridCopy(grid, tmpGrid, gridLenX, gridLenY);
+				dimCoef = tmpDimCoef;
+			}
+			noResult = 0;
+		}
+	}
+	if(noResult)
+	{
+		printf("No configuratin were found.\nSuggestion: retry or force grid dimensions.\n");
+		return 1;
+	}
+	// resize grid
+	resizeGrid(grid, &gridLenX, &gridLenY);
+	char letters[MAXLETLEN];
+	int lettersLen = 0;
+	getLettersFromWords(list, listLen, NBWORDS, letters, &lettersLen);
+	fillGrid(grid, gridLenX, gridLenY, letters, lettersLen);
 	print(grid, gridLenX, gridLenY);
 	return 0;
 }
