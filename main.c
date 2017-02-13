@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "word.h"
+
 #define EMPTY			'.'
 #define NBTRY			(10)
-#define MAXLETLEN		(256)
 
 // get random value on x axis
 // r:rotation, l: string length, m: maximum
@@ -26,28 +27,6 @@
 int abs(int x)
 {
 	return(x >= 0 ? x : -x);
-}
-
-/* Sort a list of string from longer to smaller
-** list: 		list where strings are
-** len: 		array which contains size of strings
-** listLen: 	length of list array
-*/
-void sort(char ** list, int * len, const int listLen)
-{
-	char * tmpStr;
-	int tmpIdx;
-	for(int i = 0; i < listLen - 1; i++)
-		for(int j = 0; j < listLen - 1 - i; j++)
-			if(len[j] < len[j+1])
-			{
-				tmpStr = list[j];
-				tmpIdx = len[j];
-				list[j] = list[j+1];
-				len[j] = len[j+1];
-				list[j+1] = tmpStr;
-				len[j+1] = tmpIdx;
-			}
 }
 
 /* Insert a word into a grid smartly
@@ -319,38 +298,6 @@ void resizeGrid(char * grid, int * gridLenX, int * gridLenY)
 				grid[*gridLenX*j+i] = EMPTY;
 	*gridLenX = w;
 	*gridLenY = h;
-}
-
-/* Get letters set from set for words
-** list: 			main input, array of strings
-** len:				len of each string
-** listLen: 		number of words
-** let:				array of letters
-** letlen:			size of lettesr array
-*/
-void getLettersFromWords(char ** list, int * len, int listLen, char * let, int * letLen)
-{
-	*letLen = 0;
-	for(int wordIdx = 0; wordIdx < listLen; wordIdx++)
-		for(int letIdx = 0; letIdx < len[wordIdx]; letIdx++)
-		{
-			char c = list[wordIdx][letIdx];
-			int contains = 0;
-			for(int i = 0; i < *letLen; i++)
-				if(c == let[i])
-				{
-					contains = 1;
-					break;
-				}
-			if(contains)
-				continue;
-			let[(*letLen)++] = c;
-			if(*letLen == MAXLETLEN - 1)
-			{
-				printf("[ERROR] Too much letter are used\n");
-				return;
-			}
-		}
 }
 
 int main(int argc, char * argv[])
