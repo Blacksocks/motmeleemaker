@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -c -std=gnu99 -g -O3 -Werror -Wall -Wextra
-SRCS = word.c main.c
+SRCS = word.c grid.c main.c
 OBJS = $(subst .c,.o,$(SRCS))
 EXE = main
 PARAMS = in.txt 20
