@@ -16,16 +16,17 @@
 						case 2:y++;break;case 3:x--;y++;break;\
 						case 4:x--;break;case 5:x--;y--;break;\
 						case 6:y--;break;case 7:x++;y--;break;}
+#define POS(grid,x,y)	grid->g[grid->w * (y) + x]
 
-int gridGenerator(char * grid, const int gridLenX, const int gridLenY, char ** list, const int * len, const int listLen)
+int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen)
 {
 	for(int i = 0; i < listLen; i++)
-		if(!insertWord(grid, gridLenX, gridLenY, list[i], len[i]))
+		if(!insertWord(grid, list[i], len[i]))
 			return 0;
 	return 1;
 }
 
-int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen)
+int insertWord(t_grid * grid, char * word, int wordLen)
 {
 	int maxPosX, minPosX, maxPosY, minPosY;
 	int wordBreak; // is word into grid ?
@@ -43,9 +44,9 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 	{
 		// init position
 		minPosX = BTW(rot,wordLen-1,3,5);
-		maxPosX = gridLenX - 1 - NEQ2(rot,wordLen-1,2,6); // size X
+		maxPosX = grid->lx - 1 - NEQ2(rot,wordLen-1,2,6); // size X
 		minPosY = BTW(rot,wordLen-1,5,7);
-		maxPosY = gridLenY - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
+		maxPosY = grid->ly - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
 		// find random position
 		if(maxPosX == 0) posX = minPosX;
 		else posX = minPosX + rand() % maxPosX;
@@ -61,7 +62,7 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
 				for(int j = 0; j < wordLen; j++)
-					if(grid[gridLenX*tmpY+tmpX] == EMPTY)
+					if(POS(grid,tmpX,tmpY) == EMPTY)
 						ROT(rot,tmpX,tmpY)
 					else
 						emptyBreak = 0;
@@ -73,7 +74,7 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 					emptyBreak = 1;
 					for(int j = 0; j < wordLen; j++)
 					{
-						char gridVal = grid[gridLenX*tmpY+tmpX];
+						char gridVal = POS(grid,tmpX,tmpY);
 						if(gridVal == EMPTY || gridVal == word[j])
 							ROT(rot,tmpX,tmpY)
 						else
@@ -88,7 +89,7 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 						tmpX = posX; tmpY = posY;
 						for(int j = 0; j < wordLen; j++)
 						{
-							grid[gridLenX*tmpY+tmpX] = word[j];
+							POS(grid,tmpX,tmpY) = word[j];
 							ROT(rot,tmpX,tmpY)
 						}
 					}
@@ -110,9 +111,9 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 	{
 		// init position
 		minPosX = BTW(rot,wordLen-1,3,5);
-		maxPosX = gridLenX - 1 - NEQ2(rot,wordLen-1,2,6); // size X
+		maxPosX = grid->lx - 1 - NEQ2(rot,wordLen-1,2,6); // size X
 		minPosY = BTW(rot,wordLen-1,5,7);
-		maxPosY = gridLenY - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
+		maxPosY = grid->ly - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
 		// find random position
 		if(maxPosX == 0) posX = minPosX;
 		else posX = minPosX + rand() % maxPosX;
@@ -128,7 +129,7 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
 				for(int j = 0; j < wordLen; j++)
-					if(grid[gridLenX*tmpY+tmpX] == EMPTY)
+					if(POS(grid,tmpX,tmpY) == EMPTY)
 						ROT(rot,tmpX,tmpY)
 					else
 						emptyBreak = 0;
@@ -141,7 +142,7 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 					tmpX = posX; tmpY = posY;
 					for(int j = 0; j < wordLen; j++)
 					{
-						grid[gridLenX*tmpY+tmpX] = word[j];
+						POS(grid,tmpX,tmpY) = word[j];
 						ROT(rot,tmpX,tmpY)
 					}
 				}
@@ -160,48 +161,48 @@ int insertWord(char * grid, int gridLenX, int gridLenY, char * word, int wordLen
 	return 1;
 }
 
-void fillGrid(char * grid, int gridLenX, int gridLenY, char * letters, int letterLen)
+void fillGrid(t_grid * grid, char * letters, int letterLen)
 {
-	for(int i = 0; i < gridLenY; i++)
-		for(int j = 0; j < gridLenX; j++)
+	for(int i = 0; i < grid->ly; i++)
+		for(int j = 0; j < grid->lx; j++)
 		{
 			// if character isn't EMPTY, don't fill it
-			if(grid[i*gridLenX+j] != EMPTY)
+			if(POS(grid,j,i) != EMPTY)
 				continue;
 			// get random letter into letters and fill grid with it
-			grid[i*gridLenX+j] = letters[rand() % letterLen];
+			POS(grid,j,i) = letters[rand() % letterLen];
 		}
 }
 
-void resizeGrid(char * grid, int * gridLenX, int * gridLenY)
+void resizeGrid(t_grid * grid)
 {
 	int x1, y1, x2, y2;
-	getGridSize(grid, *gridLenX, *gridLenY, &x1, &y1, &x2, &y2);
+	getGridSize(grid, &x1, &y1, &x2, &y2);
 	int w = x2 - x1 + 1;
 	int h = y2 - y1 + 1;
 	// shift grid [-x1, -y1]
 	for(int j = 0; j < h; j++)
 		for(int i = 0; i < w; i++)
-			grid[*gridLenX*j+i] = grid[*gridLenX*(j+y1)+i+x1];
+			POS(grid,i,j) = POS(grid,i+x1,j+y1);
 	// reset rest of the grid
-	for(int j = 0; j < *gridLenY; j++)
-		for(int i = 0; i < *gridLenX; i++)
+	for(int j = 0; j < grid->ly; j++)
+		for(int i = 0; i < grid->lx; i++)
 			if(i >= w || j >= h)
-				grid[*gridLenX*j+i] = EMPTY;
-	*gridLenX = w;
-	*gridLenY = h;
+				POS(grid,i,j) = EMPTY;
+	grid->lx = w;
+	grid->ly = h;
 }
 
-void getGridSize(char * grid, int gridLenX, int gridLenY, int * x1, int * y1, int * x2, int * y2)
+void getGridSize(t_grid * grid, int * x1, int * y1, int * x2, int * y2)
 {
-	*x1 = gridLenX - 1;
-	*y1 = gridLenY - 1;
+	*x1 = grid->lx - 1;
+	*y1 = grid->ly - 1;
 	*x2 = 0;
 	*y2 = 0;
-	for(int tmpY = 0; tmpY < gridLenY; tmpY++)
-		for(int tmpX = 0; tmpX < gridLenX; tmpX++)
+	for(int tmpY = 0; tmpY < grid->ly; tmpY++)
+		for(int tmpX = 0; tmpX < grid->lx; tmpX++)
 		{
-			if(grid[gridLenX*tmpY + tmpX] == EMPTY)
+			if(POS(grid,tmpX,tmpY) == EMPTY)
 				continue;
 			if(tmpX < *x1) *x1 = tmpX;
 			if(tmpX > *x2) *x2 = tmpX;
@@ -210,24 +211,24 @@ void getGridSize(char * grid, int gridLenX, int gridLenY, int * x1, int * y1, in
 		}
 }
 
-void gridCopy(char * grid1, const char * grid2, int gridLenX, int gridLenY)
+void gridCopy(t_grid * grid1, const t_grid * grid2)
 {
-	for(int j = 0; j < gridLenY; j++)
-		for(int i = 0; i < gridLenX; i++)
-			grid1[j*gridLenX+i] = grid2[j*gridLenX+i];
+	for(int j = 0; j < grid1->ly; j++)
+		for(int i = 0; i < grid1->lx; i++)
+			POS(grid1,i,j) = POS(grid2,i,j);
 }
 
-void gridDisplay(char * grid, int gridLenX, int gridLenY)
+void gridDisplay(t_grid * grid)
 {
 	printf("  .");
-	for(int i = 0; i < gridLenX; i++)
+	for(int i = 0; i < grid->lx; i++)
 		printf("%c%d", (i < 10) ? ' ' : i / 10 + '0', i % 10);
 	printf("\n");
-	for(int j = 0; j < gridLenY; j++)
+	for(int j = 0; j < grid->ly; j++)
 	{
 		printf("%c%d| ", (j < 10) ? ' ' : j / 10 + '0', j % 10);
-		for(int i = 0; i < gridLenX; i++)
-			printf("%c ", grid[j*gridLenX + i]);
+		for(int i = 0; i < grid->lx; i++)
+			printf("%c ", POS(grid,i,j));
 		printf("\n");
 	}
 }
