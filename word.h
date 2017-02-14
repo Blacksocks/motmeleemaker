@@ -22,6 +22,6 @@ void sort(char ** list, int * len, const int listLen);
 ** let:				array of letters
 ** letlen:			size of lettesr array
 */
-void getLettersFromWords(char ** list, int * len, int listLen, char * let, int * letLen);
+void getLettersFromWords(const char ** list, const int * len, const int listLen, char * let, int * letLen);
 
 #endif // _WORD_H_

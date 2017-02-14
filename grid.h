@@ -26,7 +26,7 @@ int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLe
 ** letters:		characters which could be used
 ** lettersLen:	lenght of letters array
 */
-void fillGrid(t_grid * grid, char * letters, int letterLen);
+void fillGrid(t_grid * grid, const char * letters, const int letterLen);
 
 /* Resize grid and shift effective grid window at top left corner
 ** grid:			grid
@@ -40,7 +40,7 @@ void normalizeGrid(t_grid * grid);
 ** x2:				window width + window X position
 ** y2:				window height + window Y positin
 */
-void getGridSize(t_grid * grid, int * x1, int * y1, int * x2, int * y2);
+void getGridSize(const t_grid * grid, int * x1, int * y1, int * x2, int * y2);
 
 /* Copy a grid into another
 ** grid1;			output grid
@@ -51,7 +51,7 @@ void gridCopy(t_grid * grid1, const t_grid * grid2);
 /* Grid printer function
 ** grid:			grid displayed
 */
-void gridDisplay(t_grid * grid);
+void gridDisplay(const t_grid * grid);
 
 /* Replace the grid if tmpGrid is smaller
 ** 'smaller' use the effective size of grid, i.e. without EMPTY cells
@@ -59,6 +59,6 @@ void gridDisplay(t_grid * grid);
 ** tmpGrid:			potentially smaller grid
 ** grid:			main gridDisplay
 */
-int gridReplaceIfSmaller(t_grid * tmpGrid, t_grid * grid);
+int gridReplaceIfSmaller(const t_grid * tmpGrid, t_grid * grid);
 
 #endif // _GRID_H_

@@ -177,7 +177,7 @@ int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLe
 	return 1;
 }
 
-void fillGrid(t_grid * grid, char * letters, int letterLen)
+void fillGrid(t_grid * grid, const char * letters, const int letterLen)
 {
 	for(int i = 0; i < grid->ly; i++)
 		for(int j = 0; j < grid->lx; j++)
@@ -209,7 +209,7 @@ void normalizeGrid(t_grid * grid)
 	grid->ly = h;
 }
 
-void getGridSize(t_grid * grid, int * x1, int * y1, int * x2, int * y2)
+void getGridSize(const t_grid * grid, int * x1, int * y1, int * x2, int * y2)
 {
 	*x1 = grid->lx - 1;
 	*y1 = grid->ly - 1;
@@ -236,7 +236,7 @@ void gridCopy(t_grid * grid1, const t_grid * grid2)
 			POS(grid1,i,j) = POS(grid2,i,j);
 }
 
-void gridDisplay(t_grid * grid)
+void gridDisplay(const t_grid * grid)
 {
 	printf("  .");
 	for(int i = 0; i < grid->lx; i++)
@@ -251,7 +251,7 @@ void gridDisplay(t_grid * grid)
 	}
 }
 
-int gridReplaceIfSmaller(t_grid * tmpGrid, t_grid * grid)
+int gridReplaceIfSmaller(const t_grid * tmpGrid, t_grid * grid)
 {
 	int gridLen = grid->lx + grid->ly;
 	int tmpX1, tmpY1, tmpX2, tmpY2;

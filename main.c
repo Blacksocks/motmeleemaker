@@ -82,17 +82,16 @@ int main(int argc, char * argv[])
 		for(int j = 0; j < SQ(gridSize); j++)
 			tmpGrid.g[j] = EMPTY;
 		int success = gridGenerator(&tmpGrid, list, listLen, nbWords);
-		if(success)
+		if(!success)
+			continue;
+		if(noResult)
 		{
-			if(noResult)
-			{
-				noResult = 0;
-				gridCopy(&grid, &tmpGrid);
-			}
-			else
-				gridReplaceIfSmaller(&tmpGrid, &grid);
-			normalizeGrid(&grid);
+			noResult = 0;
+			gridCopy(&grid, &tmpGrid);
 		}
+		else
+			gridReplaceIfSmaller(&tmpGrid, &grid);
+		normalizeGrid(&grid);
 	}
 	if(noResult)
 	{
@@ -102,8 +101,9 @@ int main(int argc, char * argv[])
 	char letters[MAXLETLEN];
 	int lettersLen = 0;
 	getLettersFromWords(list, listLen, nbWords, letters, &lettersLen);
-	//fillGrid(&grid, letters, lettersLen);
+	fillGrid(&grid, letters, lettersLen);
 	gridDisplay(&grid);
+
 	// free
 	for(int i = 0; i < nbWords; i++)
 		free(list[i]);
