@@ -19,7 +19,7 @@ void sort(char ** list, int * len, const int listLen)
 			}
 }
 
-void getLettersFromWords(const char ** list, const int * len, const int listLen, char * let, int * letLen)
+void getLettersFromWords(char ** list, const int * len, const int listLen, char * let, int * letLen)
 {
 	*letLen = 0;
 	for(int wordIdx = 0; wordIdx < listLen; wordIdx++)

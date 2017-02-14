@@ -26,10 +26,6 @@ int getMaxInt(int * list, int length)
 
 int main(int argc, char * argv[])
 {
-	// input strings
-	char ** list;
-	// length of input string
-	int * listLen;
 	if(argc < 2 || argc > 3)
 	{
 		printf("Usage: main filein[, size]\n  filein: (string) input text file with one word per line\n  size: (int) size of the square grid\n");
@@ -45,13 +41,25 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	int nbWords = getNbLines(file);
-	// allocate memory for list
-	list = malloc(sizeof(char *) * nbWords);
-	listLen = malloc(sizeof(int) * nbWords);
+	// allocate memory for input words
+	char ** list = malloc(sizeof(char *) * nbWords);
+	int * listLen = malloc(sizeof(int) * nbWords);
+	if(!list || !listLen)
+	{
+		printf("[ERROR] Malloc failed\n");
+		return 1;
+	}
 	getWordsLen(file, listLen);
 	// allocate memory for words
 	for(int i = 0; i < nbWords; i++)
+	{
 		list[i] = malloc(sizeof(char) * (listLen[i] + 1));
+		if(!list[i])
+		{
+			printf("[ERROR] Malloc failed\n");
+			return 1;
+		}
+	}
 	// recopy words into list
 	getWords(file, list);
 	fclose(file);
