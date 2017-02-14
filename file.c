@@ -1,5 +1,7 @@
 #include "file.h"
 
+#define POS(grid,x,y)	grid->g[grid->w * (y) + x]
+
 int getNbLines(FILE * f)
 {
 	char c;
@@ -53,5 +55,15 @@ void getWords(FILE * f, char ** list)
 			idx++;
 			count = 0;
 		}
+	}
+}
+
+void saveGrid(FILE * f, const t_grid * grid)
+{
+	for(int j = 0; j < grid->ly; j++)
+	{
+		for(int i = 0; i < grid->lx; i++)
+			fputc(POS(grid,i,j), f);
+		fputc('\n', f);
 	}
 }

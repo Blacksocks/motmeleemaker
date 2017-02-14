@@ -3,7 +3,8 @@ CFLAGS = -c -std=gnu99 -g -O3 -Werror -Wall -Wextra
 SRCS = word.c grid.c file.c main.c
 OBJS = $(subst .c,.o,$(SRCS))
 EXE = main
-PARAMS = in.txt 20
+OUT = out.txt
+PARAMS = in.txt $(OUT)
 
 .PHONY : all run db clean
 
@@ -18,4 +19,4 @@ db: $(EXE)
 	gdb $(EXE)
 
 clean:
-	rm -f $(EXE) $(OBJS) $(DEPS)
+	rm -f $(EXE) $(OBJS) $(OUT)

@@ -26,9 +26,12 @@ int getMaxInt(int * list, int length)
 
 int main(int argc, char * argv[])
 {
-	if(argc < 2 || argc > 3)
+	if(argc < 3 || argc > 4)
 	{
-		printf("Usage: main filein[, size]\n  filein: (string) input text file with one word per line\n  size: (int) size of the square grid\n");
+		printf("Usage: main filein, fileout[, size]\n"
+		"  filein: (string) input text file with one word per line\n"
+		"  fileout: (string) output text file\n"
+		"  size: (int) size of the square grid\n");
 		return 1;
 	}
 
@@ -37,7 +40,7 @@ int main(int argc, char * argv[])
 	file = fopen(argv[1], "r");
 	if(!file)
 	{
-		printf("[ERROR] File cannot be readen\n");
+		printf("[ERROR] Input file cannot be readen\n");
 		return 1;
 	}
 	int nbWords = getNbLines(file);
@@ -65,7 +68,7 @@ int main(int argc, char * argv[])
 	fclose(file);
 
 	// init grid
-	const int gridSize = (argc == 3) ? atoi(argv[2]) : MAX(getMaxInt(listLen, nbWords), nbWords);
+	const int gridSize = (argc == 4) ? atoi(argv[3]) : MAX(getMaxInt(listLen, nbWords), nbWords);
 	char gridArray[SQ(gridSize)];
 	t_grid grid = {gridArray, gridSize, gridSize, gridSize};
 	char tmpGridArray[SQ(gridSize)];
@@ -110,12 +113,23 @@ int main(int argc, char * argv[])
 	int lettersLen = 0;
 	getLettersFromWords(list, listLen, nbWords, letters, &lettersLen);
 	fillGrid(&grid, letters, lettersLen);
-	gridDisplay(&grid);
+
+	// write grid into ouput file
+	file = fopen(argv[2], "w");
+	if(!file)
+	{
+		printf("[ERROR] Output file cannot be readen\n");
+		gridDisplay(&grid);
+		return 1;
+	}
+	saveGrid(file, &grid);
+	fclose(file);
 
 	// free
 	for(int i = 0; i < nbWords; i++)
 		free(list[i]);
 	free(list);
 	free(listLen);
+	printf("[INFO] Program ended successfully\n");
 	return 0;
 }

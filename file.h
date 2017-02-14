@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#include "grid.h"
+
 /* Get number of lines of a file
 ** f:			file to inspect
 */
@@ -20,5 +22,11 @@ void getWordsLen(FILE * f, int * len);
 ** list:		list of words
 */
 void getWords(FILE * f, char ** list);
+
+/* Write grid into a text file
+** f:				text file where grid will be saved
+** grid:			grid to save
+*/
+void saveGrid(FILE * f, const t_grid * grid);
 
 #endif // _FILE_H_
