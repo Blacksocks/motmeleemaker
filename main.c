@@ -6,14 +6,29 @@
 #include "grid.h"
 #include "file.h"
 
-#define NBTRY			(10)
+#define NBTRY		(10)
+#define MAXINT(a,b)	((a > b) ? a : b)
+#define SQ(x)		(x * x)
 
 /* Return absolute value
-** x: input value
+** x:				input value
 */
 int abs(int x)
 {
 	return(x >= 0 ? x : -x);
+}
+
+/* Return max value into an integer array
+** list:			integer array
+** len:				array length
+*/
+int getMaxInt(int * list, int length)
+{
+	int res = list[0]; // max of word length
+	for(int i = 1; i < length; i++)
+		if(list[i] > res)
+			res = list[i];
+	return res;
 }
 
 int main(int argc, char * argv[])
@@ -27,8 +42,8 @@ int main(int argc, char * argv[])
 		printf("Usage: main filein[, size]\n  filein: (string) input text file with one word per line\n  size: (int) size of the square grid\n");
 		return 1;
 	}
+
 	// get word list from file
-	int c;
 	FILE *file;
 	file = fopen(argv[1], "r");
 	if(!file)
@@ -37,72 +52,26 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	int nbWords = getNbLines(file);
-	// get memory for list
+	// allocate memory for list
 	list = malloc(sizeof(char *) * nbWords);
 	listLen = malloc(sizeof(int) * nbWords);
-	// get memory for words
-	int count = 0;
-	int idx = 0;
-	fseek(file, 0, SEEK_SET);
-	while ((c = getc(file)) != EOF)
-	{
-		if(c != '\n')
-			count++;
-		else if(count != 0)
-		{
-			list[idx] = malloc(sizeof(char) * count + 1);
-			for (int a = 0; a < count + 1; ++a)
-				list[idx][a] = 0;
-			listLen[idx++] = count;
-			count = 0;
-		}
-	}
+	getWordsLen(file, listLen);
+	// allocate memory for words
+	for(int i = 0; i < nbWords; i++)
+		list[i] = malloc(sizeof(char) * (listLen[i] + 1));
 	// recopy words into list
-	fseek(file, 0, SEEK_SET);
-	count = 0;
-	idx = 0;
-	while ((c = getc(file)) != EOF)
-	{
-		if(c != '\n')
-		{
-			list[idx][count] = c;
-			count++;
-		}
-		else if(count != 0)
-		{
-			idx++;
-			count = 0;
-		}
-	}
+	getWords(file, list);
 	fclose(file);
-	int gridLenX, gridLenY;
-	if(argc == 3)
-	{
-		// set grid length
-		gridLenX = atoi(argv[2]);
-		gridLenY = gridLenX;
-	}
-	else
-	{
-		// set grid length
-		gridLenX = listLen[0]; // max of word length
-		for(int i = 1; i < nbWords; i++)
-			if(listLen[i] > gridLenX)
-				gridLenX = listLen[i];
-		gridLenY = nbWords;
-		if(gridLenX > gridLenY) // make square grid
-			gridLenY = gridLenX;
-		else
-			gridLenX = gridLenY;
-	}
-	const int gridLen = gridLenX * gridLenY;
+
 	// init grid
-	char gridArray[gridLen];
-	t_grid grid = {gridArray, gridLenX, gridLenY, gridLenX};
-	char tmpGridArray[gridLen];
-	t_grid tmpGrid = {tmpGridArray, gridLenX, gridLenY, gridLenX};
-	for(int i = 0; i < gridLen; i++)
+	const int gridSize = (argc == 3) ? atoi(argv[2]) : MAXINT(getMaxInt(listLen, nbWords), nbWords);
+	char gridArray[SQ(gridSize)];
+	t_grid grid = {gridArray, gridSize, gridSize, gridSize};
+	char tmpGridArray[SQ(gridSize)];
+	t_grid tmpGrid = {tmpGridArray, gridSize, gridSize, gridSize};
+	for(int i = 0; i < SQ(gridSize); i++)
 		grid.g[i] = EMPTY;
+
 	// sort list from longer to shorter
 	sort(list, listLen, nbWords);
 	// print input strings ordered
@@ -118,7 +87,7 @@ int main(int argc, char * argv[])
 	// Several try are made and the best is kept in order to find a small grid
 	for(int i = 0; i < NBTRY; i++)
 	{
-		for(int j = 0; j < gridLen; j++)
+		for(int j = 0; j < SQ(gridSize); j++)
 			tmpGrid.g[j] = EMPTY;
 		int success = gridGenerator(&tmpGrid, list, listLen, nbWords);
 		if(success)
