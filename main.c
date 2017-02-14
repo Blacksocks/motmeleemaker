@@ -4,6 +4,7 @@
 
 #include "word.h"
 #include "grid.h"
+#include "file.h"
 
 #define NBTRY			(10)
 
@@ -17,7 +18,6 @@ int abs(int x)
 
 int main(int argc, char * argv[])
 {
-	int nbWords = 0;
 	// input strings
 	char ** list;
 	// length of input string
@@ -27,69 +27,54 @@ int main(int argc, char * argv[])
 		printf("Usage: main filein[, size]\n  filein: (string) input text file with one word per line\n  size: (int) size of the square grid\n");
 		return 1;
 	}
-	else
+	// get word list from file
+	int c;
+	FILE *file;
+	file = fopen(argv[1], "r");
+	if(!file)
 	{
-		// get word list from file
-		int c;
-		FILE *file;
-		file = fopen(argv[1], "r");
-		if (file)
+		printf("[ERROR] File cannot be readen\n");
+		return 1;
+	}
+	int nbWords = getNbLines(file);
+	// get memory for list
+	list = malloc(sizeof(char *) * nbWords);
+	listLen = malloc(sizeof(int) * nbWords);
+	// get memory for words
+	int count = 0;
+	int idx = 0;
+	fseek(file, 0, SEEK_SET);
+	while ((c = getc(file)) != EOF)
+	{
+		if(c != '\n')
+			count++;
+		else if(count != 0)
 		{
-			int nlf = 0;
-			// get number of line
-			while ((c = getc(file)) != EOF)
-				if(c != '\n')
-					nlf = 1;
-				else if(nlf == 1)
-				{
-					nbWords++;
-					nlf = 0;
-				}
-			// get memory for list
-			list = malloc(sizeof(char *) * nbWords);
-			listLen = malloc(sizeof(int) * nbWords);
-			// get memory for words
-			int count = 0;
-			int idx = 0;
-			fseek(file, 0, SEEK_SET);
-			while ((c = getc(file)) != EOF)
-			{
-				if(c != '\n')
-					count++;
-				else if(count != 0)
-				{
-					list[idx] = malloc(sizeof(char) * count + 1);
-					for (int a = 0; a < count + 1; ++a)
-						list[idx][a] = 0;
-					listLen[idx++] = count;
-					count = 0;
-				}
-			}
-			// recopy words into list
-			fseek(file, 0, SEEK_SET);
+			list[idx] = malloc(sizeof(char) * count + 1);
+			for (int a = 0; a < count + 1; ++a)
+				list[idx][a] = 0;
+			listLen[idx++] = count;
 			count = 0;
-			idx = 0;
-			while ((c = getc(file)) != EOF)
-			{
-				if(c != '\n')
-				{
-					list[idx][count] = c;
-					count++;
-				}
-				else if(count != 0)
-				{
-					idx++;
-					count = 0;
-				}
-			}
-			fclose(file);
-		}
-		else
-		{
-			printf("[ERROR] File cannot be readen\n");
-			return 1;
 		}
 	}
+	// recopy words into list
+	fseek(file, 0, SEEK_SET);
+	count = 0;
+	idx = 0;
+	while ((c = getc(file)) != EOF)
+	{
+		if(c != '\n')
+		{
+			list[idx][count] = c;
+			count++;
+		}
+		else if(count != 0)
+		{
+			idx++;
+			count = 0;
+		}
+	}
+	fclose(file);
 	int gridLenX, gridLenY;
 	if(argc == 3)
 	{
