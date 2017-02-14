@@ -127,24 +127,21 @@ int main(int argc, char * argv[])
 	time_t t;
 	srand((unsigned) time(&t));
 	// coefficient which caracterise grid dimensions
-	// penalise no square grids
-	int dimCoef = grid.lx + grid.ly + abs(grid.lx - grid.ly);
+	int dimCoef = grid.lx + grid.ly;
 	// generate grid
 	int noResult = 1;
 	// Several try are made and the best is kept in order to find a small grid
 	for(int i = 0; i < NBTRY; i++)
 	{
-		for(int i = 0; i < gridLen; i++)
-			tmpGrid.g[i] = EMPTY;
+		for(int j = 0; j < gridLen; j++)
+			tmpGrid.g[j] = EMPTY;
 		int success = gridGenerator(&tmpGrid, list, listLen, nbWords);
 		if(success)
 		{
 			int tmpX1, tmpY1, tmpX2, tmpY2;
 			getGridSize(&tmpGrid, &tmpX1, &tmpY1, &tmpX2, &tmpY2);
 			// if tmpGrid dimensions are smaller than grid ones
-			int tmpW = tmpX2 - tmpX1;
-			int tmpH = tmpY2 - tmpY1;
-			int tmpDimCoef = tmpW + tmpH + abs(tmpW - tmpH);
+			int tmpDimCoef = tmpX2 - tmpX1 + tmpY2 - tmpY1;
 			if(tmpDimCoef < dimCoef || noResult)
 			{
 				// replace grid into tmpGrid

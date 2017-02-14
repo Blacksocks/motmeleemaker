@@ -3,6 +3,11 @@
 
 #define MAXLETLEN		(256)
 
+typedef struct s_word {
+   char * 	w;   // word
+   int 		len; // word length
+} t_word;
+
 /* Sort a list of string from longer to smaller
 ** list: 		list where strings are
 ** len: 		array which contains size of strings

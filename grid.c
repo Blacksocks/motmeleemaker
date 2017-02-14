@@ -18,15 +18,29 @@
 						case 6:y--;break;case 7:x++;y--;break;}
 #define POS(grid,x,y)	grid->g[grid->w * (y) + x]
 
-int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen)
+/* Write a word into a grid
+** grid:		grid target
+** word: 		word to print
+** x:			x position of the word
+** y:			y position of the word
+** rot:			rotation of the word
+*/
+void writeWord(t_grid * grid, t_word * word, int x, int y, int rot)
 {
-	for(int i = 0; i < listLen; i++)
-		if(!insertWord(grid, list[i], len[i]))
-			return 0;
-	return 1;
+	for(int j = 0; j < word->len; j++)
+	{
+		POS(grid,x,y) = word->w[j];
+		ROT(rot,x,y)
+	}
 }
 
-int insertWord(t_grid * grid, char * word, int wordLen)
+/* Insert a word into a grid smartly
+** grid:		grid where the words must be inserted
+** word:		current word
+** wordLen:		lenght of the word
+** return: insertion successful ?
+*/
+int insertWord(t_grid * grid, t_word * word)
 {
 	int maxPosX, minPosX, maxPosY, minPosY;
 	int wordBreak; // is word into grid ?
@@ -43,10 +57,10 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 	for(int r = 0; r < 7 && !wordBreak; r++)
 	{
 		// init position
-		minPosX = BTW(rot,wordLen-1,3,5);
-		maxPosX = grid->lx - 1 - NEQ2(rot,wordLen-1,2,6); // size X
-		minPosY = BTW(rot,wordLen-1,5,7);
-		maxPosY = grid->ly - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
+		minPosX = BTW(rot,word->len-1,3,5);
+		maxPosX = grid->lx - 1 - NEQ2(rot,word->len-1,2,6); // size X
+		minPosY = BTW(rot,word->len-1,5,7);
+		maxPosY = grid->ly - 1 - NEQ2(rot,word->len-1,0,4); // size Y
 		// find random position
 		if(maxPosX == 0) posX = minPosX;
 		else posX = minPosX + rand() % maxPosX;
@@ -61,7 +75,7 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 				// is word into another ?
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
-				for(int j = 0; j < wordLen; j++)
+				for(int j = 0; j < word->len; j++)
 					if(POS(grid,tmpX,tmpY) == EMPTY)
 						ROT(rot,tmpX,tmpY)
 					else
@@ -72,10 +86,10 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 					// check if word could be here
 					tmpX = posX; tmpY = posY;
 					emptyBreak = 1;
-					for(int j = 0; j < wordLen; j++)
+					for(int j = 0; j < word->len; j++)
 					{
 						char gridVal = POS(grid,tmpX,tmpY);
-						if(gridVal == EMPTY || gridVal == word[j])
+						if(gridVal == EMPTY || gridVal == word->w[j])
 							ROT(rot,tmpX,tmpY)
 						else
 							emptyBreak = 0;
@@ -86,12 +100,7 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 						// pass to next word
 						wordBreak = 1;
 						// and write it into grid
-						tmpX = posX; tmpY = posY;
-						for(int j = 0; j < wordLen; j++)
-						{
-							POS(grid,tmpX,tmpY) = word[j];
-							ROT(rot,tmpX,tmpY)
-						}
+						writeWord(grid, word, posX, posY, rot);
 					}
 				}
 				// increment posX
@@ -110,10 +119,10 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 	for(int r = 0; r < 7 && !wordBreak; r++)
 	{
 		// init position
-		minPosX = BTW(rot,wordLen-1,3,5);
-		maxPosX = grid->lx - 1 - NEQ2(rot,wordLen-1,2,6); // size X
-		minPosY = BTW(rot,wordLen-1,5,7);
-		maxPosY = grid->ly - 1 - NEQ2(rot,wordLen-1,0,4); // size Y
+		minPosX = BTW(rot,word->len-1,3,5);
+		maxPosX = grid->lx - 1 - NEQ2(rot,word->len-1,2,6); // size X
+		minPosY = BTW(rot,word->len-1,5,7);
+		maxPosY = grid->ly - 1 - NEQ2(rot,word->len-1,0,4); // size Y
 		// find random position
 		if(maxPosX == 0) posX = minPosX;
 		else posX = minPosX + rand() % maxPosX;
@@ -128,7 +137,7 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 				// is word into another ?
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
-				for(int j = 0; j < wordLen; j++)
+				for(int j = 0; j < word->len; j++)
 					if(POS(grid,tmpX,tmpY) == EMPTY)
 						ROT(rot,tmpX,tmpY)
 					else
@@ -139,12 +148,7 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 					// pass to next word
 					wordBreak = 1;
 					// and write it into grid
-					tmpX = posX; tmpY = posY;
-					for(int j = 0; j < wordLen; j++)
-					{
-						POS(grid,tmpX,tmpY) = word[j];
-						ROT(rot,tmpX,tmpY)
-					}
+					writeWord(grid, word, posX, posY, rot);
 				}
 				// increment posX
 				if(++posX > maxPosX)
@@ -157,6 +161,18 @@ int insertWord(t_grid * grid, char * word, int wordLen)
 		// increment rot
 		if(++rot == 8)
 			rot = 0;
+	}
+	return 1;
+}
+
+int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen)
+{
+
+	for(int i = 0; i < listLen; i++)
+	{
+		t_word word = {list[i], len[i]};
+		if(!insertWord(grid, &word))
+			return 0;
 	}
 	return 1;
 }

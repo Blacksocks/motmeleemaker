@@ -1,6 +1,8 @@
 #ifndef _GRID_H_
 #define _GRID_H_
 
+#include "word.h"
+
 #define EMPTY			'.'
 
 typedef struct s_grid {
@@ -18,14 +20,6 @@ typedef struct s_grid {
 ** return: does a problem occured ? (exemple: grid too small)
 */
 int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen);
-
-/* Insert a word into a grid smartly
-** grid:		grid where the words must be inserted
-** word:		current word
-** wordLen:		lenght of the word
-** return: insertion successful ?
-*/
-int insertWord(t_grid * grid, char * word, int wordLen);
 
 /* Fill grid with random letters
 ** grid:		grid where words must be inserted
