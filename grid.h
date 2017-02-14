@@ -28,10 +28,10 @@ int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLe
 */
 void fillGrid(t_grid * grid, char * letters, int letterLen);
 
-/* Resize grid
-** grid:			grid displayed
+/* Resize grid and shift effective grid window at top left corner
+** grid:			grid
 */
-void resizeGrid(t_grid * grid);
+void normalizeGrid(t_grid * grid);
 
 /* Calculate dimenstion of non empty window of grid
 ** grid:			input grid
@@ -52,5 +52,13 @@ void gridCopy(t_grid * grid1, const t_grid * grid2);
 ** grid:			grid displayed
 */
 void gridDisplay(t_grid * grid);
+
+/* Replace the grid if tmpGrid is smaller
+** 'smaller' use the effective size of grid, i.e. without EMPTY cells
+** return if grid was overrided
+** tmpGrid:			potentially smaller grid
+** grid:			main gridDisplay
+*/
+int gridReplaceIfSmaller(t_grid * tmpGrid, t_grid * grid);
 
 #endif // _GRID_H_

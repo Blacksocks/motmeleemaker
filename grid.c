@@ -190,7 +190,7 @@ void fillGrid(t_grid * grid, char * letters, int letterLen)
 		}
 }
 
-void resizeGrid(t_grid * grid)
+void normalizeGrid(t_grid * grid)
 {
 	int x1, y1, x2, y2;
 	getGridSize(grid, &x1, &y1, &x2, &y2);
@@ -229,8 +229,10 @@ void getGridSize(t_grid * grid, int * x1, int * y1, int * x2, int * y2)
 
 void gridCopy(t_grid * grid1, const t_grid * grid2)
 {
-	for(int j = 0; j < grid1->ly; j++)
-		for(int i = 0; i < grid1->lx; i++)
+	grid1->lx = grid2->lx;
+	grid1->ly = grid2->ly;
+	for(int j = 0; j < grid2->ly; j++)
+		for(int i = 0; i < grid2->lx; i++)
 			POS(grid1,i,j) = POS(grid2,i,j);
 }
 
@@ -247,4 +249,20 @@ void gridDisplay(t_grid * grid)
 			printf("%c ", POS(grid,i,j));
 		printf("\n");
 	}
+}
+
+int gridReplaceIfSmaller(t_grid * tmpGrid, t_grid * grid)
+{
+	int gridLen = grid->lx + grid->ly;
+	int tmpX1, tmpY1, tmpX2, tmpY2;
+	getGridSize(tmpGrid, &tmpX1, &tmpY1, &tmpX2, &tmpY2);
+	// if tmpGrid dimensions are smaller than grid ones
+	int tmpGridLen = tmpX2 - tmpX1 + tmpY2 - tmpY1 + 2;
+	if(tmpGridLen < gridLen)
+	{
+		// replace grid into tmpGrid
+		gridCopy(grid, tmpGrid);
+		return 1;
+	}
+	return 0;
 }
