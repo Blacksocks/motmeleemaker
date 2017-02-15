@@ -21,7 +21,7 @@ void getWordsLen(FILE * f, int * len);
 ** f:			file to read
 ** list:		list of words
 */
-void getWords(FILE * f, char ** list);
+void getWords(FILE * f, char_t ** list);
 
 /* Write grid into a text file
 ** f:				text file where grid will be saved

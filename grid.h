@@ -3,13 +3,11 @@
 
 #include "word.h"
 
-#define EMPTY			'.'
-
 typedef struct s_grid {
-   char * 	g;  // grid array
-   int 		lx; // grid width
-   int 		ly; // grid height
-   int		w;  // grid width into memory
+   char_t * 	g;  // grid array
+   int 			lx; // grid width
+   int 			ly; // grid height
+   int			w;  // grid width into memory
 } t_grid;
 
 /* Generate a "mot melee" game from strings array
@@ -19,14 +17,14 @@ typedef struct s_grid {
 ** listLenLen: 		number of words
 ** return: does a problem occured ? (exemple: grid too small)
 */
-int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen);
+int gridGenerator(t_grid * grid, char_t ** list, const int * len, const int listLen);
 
 /* Fill grid with random letters
 ** grid:		grid where words must be inserted
 ** letters:		characters which could be used
 ** lettersLen:	lenght of letters array
 */
-void fillGrid(t_grid * grid, const char * letters, const int letterLen);
+void fillGrid(t_grid * grid, const char_t * letters, const int letterLen);
 
 /* Resize grid and shift effective grid window at top left corner
 ** grid:			grid

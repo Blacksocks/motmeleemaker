@@ -12,4 +12,4 @@ run: $(EXE)
 $(EXE) : $(OBJS)
 
 clean:
-	rm -f $(EXE) $(OBJS)
+	rm -f $(EXE) $(OBJS) out.txt

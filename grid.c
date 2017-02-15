@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "grid.h"
+#include "word.h"
 
 // get random value on x axis
 // r:rotation, l: string length, m: maximum
@@ -18,6 +19,8 @@
 						case 6:y--;break;case 7:x++;y--;break;}
 #define POS(grid,x,y)	grid->g[grid->w * (y) + x]
 
+extern char_t empty;
+
 /* Write a word into a grid
 ** grid:		grid target
 ** word: 		word to print
@@ -25,11 +28,11 @@
 ** y:			y position of the word
 ** rot:			rotation of the word
 */
-void writeWord(t_grid * grid, t_word * word, int x, int y, int rot)
+void writeWord(t_grid * grid, word_t * word, int x, int y, int rot)
 {
 	for(int j = 0; j < word->len; j++)
 	{
-		POS(grid,x,y) = word->w[j];
+		setChar(&POS(grid,x,y), &word->w[j]);
 		ROT(rot,x,y)
 	}
 }
@@ -40,7 +43,7 @@ void writeWord(t_grid * grid, t_word * word, int x, int y, int rot)
 ** wordLen:		lenght of the word
 ** return: insertion successful ?
 */
-int insertWord(t_grid * grid, t_word * word)
+int insertWord(t_grid * grid, word_t * word)
 {
 	int maxPosX, minPosX, maxPosY, minPosY;
 	int wordBreak; // is word into grid ?
@@ -76,7 +79,7 @@ int insertWord(t_grid * grid, t_word * word)
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
 				for(int j = 0; j < word->len; j++)
-					if(POS(grid,tmpX,tmpY) == EMPTY)
+					if(cmpChar(&POS(grid,tmpX,tmpY), &empty))
 						ROT(rot,tmpX,tmpY)
 					else
 						emptyBreak = 0;
@@ -88,8 +91,8 @@ int insertWord(t_grid * grid, t_word * word)
 					emptyBreak = 1;
 					for(int j = 0; j < word->len; j++)
 					{
-						char gridVal = POS(grid,tmpX,tmpY);
-						if(gridVal == EMPTY || gridVal == word->w[j])
+						char_t gridVal = POS(grid,tmpX,tmpY);
+						if(cmpChar(&gridVal, &empty) || cmpChar(&gridVal, &word->w[j]))
 							ROT(rot,tmpX,tmpY)
 						else
 							emptyBreak = 0;
@@ -138,7 +141,7 @@ int insertWord(t_grid * grid, t_word * word)
 				tmpX = posX; tmpY = posY;
 				emptyBreak = 1;
 				for(int j = 0; j < word->len; j++)
-					if(POS(grid,tmpX,tmpY) == EMPTY)
+					if(cmpChar(&POS(grid,tmpX,tmpY), &empty))
 						ROT(rot,tmpX,tmpY)
 					else
 						emptyBreak = 0;
@@ -165,28 +168,28 @@ int insertWord(t_grid * grid, t_word * word)
 	return 1;
 }
 
-int gridGenerator(t_grid * grid, char ** list, const int * len, const int listLen)
+int gridGenerator(t_grid * grid, char_t ** list, const int * len, const int listLen)
 {
 
 	for(int i = 0; i < listLen; i++)
 	{
-		t_word word = {list[i], len[i]};
+		word_t word = {list[i], len[i]};
 		if(!insertWord(grid, &word))
 			return 0;
 	}
 	return 1;
 }
 
-void fillGrid(t_grid * grid, const char * letters, const int letterLen)
+void fillGrid(t_grid * grid, const char_t * letters, const int letterLen)
 {
 	for(int i = 0; i < grid->ly; i++)
 		for(int j = 0; j < grid->lx; j++)
 		{
 			// if character isn't EMPTY, don't fill it
-			if(POS(grid,j,i) != EMPTY)
+			if(!cmpChar(&POS(grid,j,i), &empty))
 				continue;
 			// get random letter into letters and fill grid with it
-			POS(grid,j,i) = letters[rand() % letterLen];
+			setChar(&POS(grid,j,i), &letters[rand() % letterLen]);
 		}
 }
 
@@ -199,12 +202,13 @@ void normalizeGrid(t_grid * grid)
 	// shift grid [-x1, -y1]
 	for(int j = 0; j < h; j++)
 		for(int i = 0; i < w; i++)
-			POS(grid,i,j) = POS(grid,i+x1,j+y1);
+			for(int k = 0; k < CHARSIZE; k++)
+				POS(grid,i,j).c[k] = POS(grid,i+x1,j+y1).c[k];
 	// reset rest of the grid
 	for(int j = 0; j < grid->ly; j++)
 		for(int i = 0; i < grid->lx; i++)
 			if(i >= w || j >= h)
-				POS(grid,i,j) = EMPTY;
+				setChar(&POS(grid,i,j), &empty);
 	grid->lx = w;
 	grid->ly = h;
 }
@@ -218,7 +222,7 @@ void getGridSize(const t_grid * grid, int * x1, int * y1, int * x2, int * y2)
 	for(int tmpY = 0; tmpY < grid->ly; tmpY++)
 		for(int tmpX = 0; tmpX < grid->lx; tmpX++)
 		{
-			if(POS(grid,tmpX,tmpY) == EMPTY)
+			if(cmpChar(&POS(grid,tmpX,tmpY), &empty))
 				continue;
 			if(tmpX < *x1) *x1 = tmpX;
 			if(tmpX > *x2) *x2 = tmpX;
@@ -233,7 +237,8 @@ void gridCopy(t_grid * grid1, const t_grid * grid2)
 	grid1->ly = grid2->ly;
 	for(int j = 0; j < grid2->ly; j++)
 		for(int i = 0; i < grid2->lx; i++)
-			POS(grid1,i,j) = POS(grid2,i,j);
+			for(int k = 0; k < CHARSIZE; k++)
+				POS(grid1,i,j).c[k] = POS(grid2,i,j).c[k];
 }
 
 void gridDisplay(const t_grid * grid)
@@ -246,7 +251,11 @@ void gridDisplay(const t_grid * grid)
 	{
 		printf("%c%d| ", (j < 10) ? ' ' : j / 10 + '0', j % 10);
 		for(int i = 0; i < grid->lx; i++)
-			printf("%c ", POS(grid,i,j));
+		{
+			for(int k = 0; k < CHARSIZE; k++)
+				putchar(POS(grid,i,j).c[k]);
+			printf(" ");
+		}
 		printf("\n");
 	}
 }

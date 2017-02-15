@@ -11,6 +11,8 @@
 #define MAX(a,b)	((a > b) ? a : b)
 #define SQ(x)		(x * x)
 
+char_t empty = {"\0\0\0."};
+
 /* Return max value into an integer array
 ** list:			integer array
 ** len:				array length
@@ -36,7 +38,7 @@ int main(int argc, char * argv[])
 	}
 
 	// get word list from file
-	FILE *file = fopen(argv[1], "r");
+	FILE * file = fopen(argv[1], "r");
 	if(!file)
 	{
 		printf("[ERROR] Input file cannot be readen\n");
@@ -44,7 +46,7 @@ int main(int argc, char * argv[])
 	}
 	int nbWords = getNbLines(file);
 	// allocate memory for input words
-	char ** list = malloc(sizeof(char *) * nbWords);
+	char_t ** list = malloc(sizeof(char_t *) * nbWords);
 	int * listLen = malloc(sizeof(int) * nbWords);
 	if(!list || !listLen)
 	{
@@ -55,7 +57,11 @@ int main(int argc, char * argv[])
 	// allocate memory for words
 	for(int i = 0; i < nbWords; i++)
 	{
-		list[i] = malloc(sizeof(char) * (listLen[i] + 1));
+		list[i] = malloc(sizeof(char_t) * listLen[i]);
+		// init list content to 0
+		for(int j = 0; j < listLen[i]; j++)
+			for(int k = 0; k < CHARSIZE; k++)
+				list[i][j].c[k] = 0;
 		if(!list[i])
 		{
 			printf("[ERROR] Malloc failed\n");
@@ -68,18 +74,23 @@ int main(int argc, char * argv[])
 
 	// init grid
 	const int gridSize = (argc == 4) ? atoi(argv[3]) : MAX(getMaxInt(listLen, nbWords), nbWords);
-	char gridArray[SQ(gridSize)];
+	char_t gridArray[SQ(gridSize)];
 	t_grid grid = {gridArray, gridSize, gridSize, gridSize};
-	char tmpGridArray[SQ(gridSize)];
+	char_t tmpGridArray[SQ(gridSize)];
 	t_grid tmpGrid = {tmpGridArray, gridSize, gridSize, gridSize};
 	for(int i = 0; i < SQ(gridSize); i++)
-		grid.g[i] = EMPTY;
+		setChar(&grid.g[i], &empty);
 
 	// sort list from longer to shorter
 	sort(list, listLen, nbWords);
 	// print input strings ordered
 	for(int i = 0; i < nbWords; i++)
-		printf("%s\n", list[i]);
+	{
+		for(int j = 0; j < listLen[i]; j++)
+			for(int k = 0; k < CHARSIZE; k++)
+				putchar(list[i][j].c[k]);
+		printf("\n");
+	}
 	// initialise random function
 	time_t t;
 	srand((unsigned) time(&t));
@@ -90,7 +101,7 @@ int main(int argc, char * argv[])
 	for(int i = 0; i < NBTRY; i++)
 	{
 		for(int j = 0; j < SQ(gridSize); j++)
-			tmpGrid.g[j] = EMPTY;
+			setChar(&tmpGrid.g[j], &empty);
 		int success = gridGenerator(&tmpGrid, list, listLen, nbWords);
 		if(!success)
 			continue;
@@ -108,7 +119,7 @@ int main(int argc, char * argv[])
 		printf("No configuratin were found.\nSuggestion: retry or force grid dimensions.\n");
 		return 1;
 	}
-	char letters[MAXLETLEN];
+	char_t letters[MAXLETLEN];
 	int lettersLen = 0;
 	getLettersFromWords(list, listLen, nbWords, letters, &lettersLen);
 	fillGrid(&grid, letters, lettersLen);

@@ -2,9 +2,9 @@
 
 #include "word.h"
 
-void sort(char ** list, int * len, const int listLen)
+void sort(char_t ** list, int * len, const int listLen)
 {
-	char * tmpStr;
+	char_t * tmpStr;
 	int tmpIdx;
 	for(int i = 0; i < listLen - 1; i++)
 		for(int j = 0; j < listLen - 1 - i; j++)
@@ -19,27 +19,41 @@ void sort(char ** list, int * len, const int listLen)
 			}
 }
 
-void getLettersFromWords(char ** list, const int * len, const int listLen, char * let, int * letLen)
+void getLettersFromWords(char_t ** list, const int * len, const int listLen, char_t * let, int * letLen)
 {
 	*letLen = 0;
 	for(int wordIdx = 0; wordIdx < listLen; wordIdx++)
 		for(int letIdx = 0; letIdx < len[wordIdx]; letIdx++)
 		{
-			char c = list[wordIdx][letIdx];
+			char_t c = list[wordIdx][letIdx];
 			int contains = 0;
 			for(int i = 0; i < *letLen; i++)
-				if(c == let[i])
+				if(cmpChar(&c, &let[i]))
 				{
 					contains = 1;
 					break;
 				}
 			if(contains)
 				continue;
-			let[(*letLen)++] = c;
+			setChar(&let[(*letLen)++], &c);
 			if(*letLen == MAXLETLEN - 1)
 			{
 				printf("[ERROR] Too much letter are used\n");
 				return;
 			}
 		}
+}
+
+int cmpChar(const char_t * c1, const char_t * c2)
+{
+	for(int i = 0; i < CHARSIZE; i++)
+		if(c1->c[i] != c2->c[i])
+			return 0;
+	return 1;
+}
+
+void setChar(char_t * c1, const char_t * c2)
+{
+	for(int i = 0; i < CHARSIZE; i++)
+		c1->c[i] = c2->c[i];
 }
