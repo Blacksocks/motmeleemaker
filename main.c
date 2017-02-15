@@ -36,8 +36,7 @@ int main(int argc, char * argv[])
 	}
 
 	// get word list from file
-	FILE *file;
-	file = fopen(argv[1], "r");
+	FILE *file = fopen(argv[1], "r");
 	if(!file)
 	{
 		printf("[ERROR] Input file cannot be readen\n");
