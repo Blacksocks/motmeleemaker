@@ -3,7 +3,7 @@ CFLAGS = -c -std=gnu99 -g -O3 -Werror -Wall -Wextra
 SRCS = main.c grid.c file.c word.c
 OBJS = $(subst .c,.o,$(SRCS))
 EXE = main
-PARAMS = in.txt
+PARAMS = in.txt fr.txt
 
 .PHONY : all run db clean
 

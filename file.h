@@ -1,6 +1,8 @@
 #ifndef _FILE_H_
 #define _FILE_H_
 
+#include <stdio.h>
+
 #include "grid.h"
 
 /* Get dimensions of the content of file, i.e. nb of lines and cols of the first line

@@ -1,4 +1,4 @@
-#include "grid.h"
+#include "file.h"
 
 void getDimFile(FILE * f, dim_t * dim)
 {
