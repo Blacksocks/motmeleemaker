@@ -28,6 +28,6 @@ cleang:
 
 # clean exe
 cleane:
-	rm -f $(exe)
+	rm -f $(EXE)
 
 clean: cleano cleang cleane

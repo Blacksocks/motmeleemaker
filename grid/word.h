@@ -2,7 +2,7 @@
 #define _WORD_H_
 
 #define MAXLETLEN		(256)
-#define CHARSIZE		(8)
+#define CHARSIZE		(4)
 
 typedef struct char_s {
 	unsigned char c[CHARSIZE];
