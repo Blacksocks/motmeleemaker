@@ -3,6 +3,7 @@
 #include <time.h>
 #include <errno.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "word.h"
 #include "grid.h"
@@ -39,6 +40,12 @@ int main(int argc, char * argv[])
 		"  size: (int) size of the square grid\n");
 		return 1;
 	}
+
+	char cwd[1024];
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+		fprintf(stdout, "Current working dir: %s\n", cwd);
+	else
+		perror("getcwd() error");
 
 	// get word list from file
 	FILE * file = fopen(argv[1], "r");
