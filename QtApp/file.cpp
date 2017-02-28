@@ -33,6 +33,7 @@ void getWDimFile(FILE * f, int * dim)
     fseek(f, 0, SEEK_SET);
     dim[0] = 0;
     while ((c = getc(f)) != (unsigned char)EOF)
+    {
         if(c != '\n')
         {
             dim[count]++;
@@ -42,9 +43,10 @@ void getWDimFile(FILE * f, int * dim)
         }
         else if(nlf == 1)
         {
-            count++;
+            dim[++count] = 0;
             nlf = 0;
         }
+    }
 }
 
 void getGrid(FILE * f, char_t * grid)

@@ -16,10 +16,12 @@
 #define PROJPATH        "/home/blacksocks/Documents/Programming/MotMeleeMaker/"
 #define OUTFILE			PROJPATH "out.txt"
 #define INFILE          PROJPATH "in.txt"
+#define TRADFILE        PROJPATH "fr.txt"
 #define GRIDPATH		PROJPATH "grid/"
 #define GRIDPRGM		GRIDPATH "main"
 
 grid_t * grid;
+words_t * words;
 
 static char * argvChild[] = {GRIDPRGM, INFILE, OUTFILE, NULL};
 
@@ -74,6 +76,28 @@ int main(int argc, char *argv[])
     grid->d = g_dim;
     printf("[INFO] Grid successfully loaded\n");
 
+    // Get words array
+    dim_t dim;
+    file = fopen(TRADFILE, "r");
+    if(!file)
+    {
+        printf("[ERROR] Traduction file \"%s\" error: %s\n", TRADFILE, strerror(errno));
+        return 1;
+    }
+    getDimFile(file, &dim);
+    word_t * wordArray = new word_t[dim.h];
+    int * wDim = new int[dim.h];
+    getWDimFile(file, wDim);
+    for(int i = 0; i < dim.h; i++)
+    {
+        wordArray[i].w = new char_t[wDim[i]];
+        wordArray[i].l = wDim[i];
+    }
+    getWords(file, wordArray);
+    words = new words_t;
+    words->w = wordArray;
+    words->l = dim.h;
+
     // GUI
     QApplication a(argc, argv);
     MainWindow w;
@@ -81,7 +105,7 @@ int main(int argc, char *argv[])
 
     int ret = a.exec();
 
-    // CLean
+    // Clean
     delete[] g_grid;
 
     return ret;

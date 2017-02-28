@@ -12,6 +12,11 @@ typedef struct word_s {
     int			l; // length of the word
 } word_t;
 
+typedef struct words_s {
+    word_t *    w; // words array
+    int         l; // length of words list
+} words_t;
+
 /* Return number of bytes used to store a char in utf8
 ** val:			value to examine
 */

@@ -42,7 +42,7 @@ void getWDimFile(FILE * f, int * dim)
 		}
 		else if(nlf == 1)
 		{
-			count++;
+			dim[++count] = 0;
 			nlf = 0;
 		}
 }
