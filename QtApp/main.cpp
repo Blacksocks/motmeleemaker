@@ -13,7 +13,7 @@
 #include "grid.h"
 #include "file.h"
 
-#define PROJPATH        "/home/blacksocks/Documents/Programming/MotMeleeMaker/"
+#define PROJPATH        "/media/blacksocks/Data/blacksocks/Documents/Programming/MotMeleeMaker/"
 #define OUTFILE			PROJPATH "out.txt"
 #define INFILE          PROJPATH "in.txt"
 #define TRADFILE        PROJPATH "fr.txt"
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     if(pid == 0)
     {
         // child process
-        printf(GRIDPRGM);
+        printf(GRIDPRGM "\n");
         execv(GRIDPRGM, argvChild);
         printf("[ERROR] An error occured during execv: %s\n", strerror(errno));
         return 1;
