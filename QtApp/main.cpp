@@ -13,7 +13,7 @@
 #include "grid.h"
 #include "file.h"
 
-#define PROJPATH        "/media/blacksocks/Data/blacksocks/Documents/Programming/MotMeleeMaker/"
+#define PROJPATH        "../"
 #define OUTFILE			PROJPATH "out.txt"
 #define INFILE          PROJPATH "in.txt"
 #define TRADFILE        PROJPATH "fr.txt"

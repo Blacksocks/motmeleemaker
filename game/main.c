@@ -11,7 +11,7 @@
 #include "file.h"
 
 #define OUTFILE			"out.txt"
-#define GRIDPATH		"/home/blacksocks/Documents/Programming/MotMeleeMaker/grid/main"
+#define GRIDPATH		"../grid/main"
 #define GRIDPRGM		"main"
 #define MAXLEN			512
 

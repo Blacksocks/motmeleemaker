@@ -19,4 +19,7 @@ db: $(EXE)
 	gdb $(EXE)
 
 clean:
-	rm -f $(OBJS) $(EXE)
+	rm -f $(OBJS)
+
+clean-all: clean
+	rm -f $(EXE)
