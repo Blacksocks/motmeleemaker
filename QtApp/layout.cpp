@@ -9,6 +9,7 @@
 
 extern grid_t * grid;
 extern words_t * words;
+QList<QString *> answers;
 
 QHBoxLayout * createLayout()
 {
@@ -48,24 +49,26 @@ QHBoxLayout * createLayout()
 
     // set anwers layout
     QVBoxLayout * answersLayout = new QVBoxLayout;
-    list<QHBoxLayout *> answers = list<QHBoxLayout*>();
     for(int i = 0; i < words->l; i++)
     {
         QHBoxLayout * answerLayout = new QHBoxLayout;
-        QString str = QString("");
+        QString * str = new QString("");
         for(int j = 0; j < words->w[i].l; j++)
-            str.append(codec->toUnicode((char*)words->w[i].w[j].c, nbOfBytesInChar(words->w[i].w[j].c[0])));
-        QLabel * answerText = new QLabel(str);
+            str->append(codec->toUnicode((char*)words->w[i].w[j].c, nbOfBytesInChar(words->w[i].w[j].c[0])));
+        QLabel * answerText = new QLabel(*str);
         answerText->setFixedHeight(ANSWER_BTN_HEIGHT);
+        answers.push_back(str);
         QPushButton * answerBtn = new QPushButton("Translate");
         answerBtn->setFixedSize(ANSWER_BTN_WIDTH, ANSWER_BTN_HEIGHT);
         answerLayout->addWidget(answerText);
         answerLayout->addStretch();
         answerLayout->addWidget(answerBtn);
-        answers.push_back(answerLayout);
+        QWidget * answer = new QWidget();
+        answer->setLayout(answerLayout);
+        answer->hide();
+        answerLayout->setContentsMargins(0, 0, 0, 0);
+        answersLayout->addWidget(answer);
     }
-    for (list<QHBoxLayout *>::const_iterator it = answers.begin(); it != answers.end(); ++it)
-        answersLayout->addLayout(*it);
     answersLayout->addStretch();
 
     // set layout
