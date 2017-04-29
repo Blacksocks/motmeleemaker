@@ -8,7 +8,7 @@ PARAMS = ../in.txt $(OUT)
 
 .PHONY : all run db clean
 
-all: run
+all: run clean
 
 $(EXE) : $(OBJS)
 
@@ -18,16 +18,5 @@ run: $(EXE)
 db: $(EXE)
 	gdb $(EXE)
 
-# clean objects
-cleano:
-	rm -f $(OBJS)
-
-# clean grid output
-cleang:
-	rm -f $(OUT)
-
-# clean exe
-cleane:
-	rm -f $(EXE)
-
-clean: cleano cleang cleane
+clean:
+	rm -f $(OBJS) $(EXE)

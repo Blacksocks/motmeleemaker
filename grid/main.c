@@ -142,5 +142,6 @@ int main(int argc, char * argv[])
 		free(list[i]);
 	free(list);
 	free(listLen);
+	printf("Grid successfully generated from %s at %s.\n", argv[1], argv[2]);
 	return 0;
 }

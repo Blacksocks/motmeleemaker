@@ -7,7 +7,7 @@ PARAMS = ../in.txt ../fr.txt
 
 .PHONY : all run db clean
 
-all: run
+all: run clean
 
 $(EXE) : $(OBJS)
 
