@@ -130,7 +130,7 @@ int main(int argc, char * argv[])
 		// child process
 		argvChild[1] = argv[1];
         execv(GRIDPATH, argvChild);
-        printf("[ERROR] An error occured during execv: %s\n\tGRIDPATH may be wrong\n", strerror(errno));
+        printf("[ERROR] An error occured during execv: %s\n\t%s not found\n", strerror(errno), GRIDPATH);
 		return 1;
     }
     else
