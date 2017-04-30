@@ -84,3 +84,35 @@ QHBoxLayout * createLayout()
 
     return layout;
 }
+
+#include "stdio.h"
+
+void updateGrid(QGridLayout * gridLayout)
+{
+    // create new gridlayout
+    QGridLayout * newGridLayout = new QGridLayout;
+    int gridW = grid->d.w;
+    int gridH = grid->d.h;
+    QTextCodec * codec = QTextCodec::codecForName("UTF-8");
+    for(int j = 0; j < gridH; j++)
+        for(int i = 0; i < gridW; i++)
+        {
+            int idx = gridW*j+i;
+            QLabel * label = new QLabel(codec->toUnicode((char*)grid->g[idx].c, nbOfBytesInChar(grid->g[idx].c[0])));
+            label->setFixedSize(GRID_BOX_WIDTH, GRID_BOX_HEIGHT);
+            newGridLayout->addWidget(label, i, j);
+        }
+    // stop displaying previous grid
+    QLayoutItem * item;
+    while ((item = gridLayout->takeAt(0)) != 0)
+    {
+        gridLayout->removeItem(item);
+        delete item->widget();
+        delete item;
+    }
+    // switch grid
+    QVBoxLayout * parent = (QVBoxLayout *)gridLayout->parent();
+    parent->removeItem(gridLayout);
+    delete gridLayout;
+    parent->insertLayout(0, newGridLayout);
+}

@@ -33,9 +33,29 @@ QPushButton * MainWindow::getSubmitBtn()
     return (QPushButton *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(0))->itemAt(1)->widget();
 }
 
+QPushButton * MainWindow::getRestartBtn()
+{
+    return (QPushButton *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(1))->itemAt(0)->widget();
+}
+
+QPushButton * MainWindow::getAnswersBtn()
+{
+    return (QPushButton *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(1))->itemAt(1)->widget();
+}
+
+QPushButton * MainWindow::getBrowseBtn()
+{
+    return (QPushButton *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(2))->itemAt(0)->widget();
+}
+
 QString MainWindow::getInputText()
 {
     return ((QLineEdit *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(0))->itemAt(0)->widget())->text();
+}
+
+QGridLayout * MainWindow::getGridLayout()
+{
+    return (QGridLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(0)->layout();
 }
 
 int MainWindow::showAnswer(QString label)

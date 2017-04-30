@@ -1,5 +1,5 @@
-#ifndef _FILE_H_
-#define _FILE_H_
+#ifndef FILE_H
+#define FILE_H
 
 #include <stdio.h>
 
@@ -29,4 +29,4 @@ void getGrid(FILE * f, char_t * grid);
 */
 void getWords(FILE * f, word_t * words);
 
-#endif // _FILE_H_
+#endif // FILE_H
