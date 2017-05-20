@@ -11,7 +11,7 @@
 #include "file.h"
 
 #define OUTFILE			"out.txt"
-#define GRIDPATH		"/home/blacksocks/Documents/Programming/MotMeleeMaker/grid/main"
+#define GRIDPATH		"../grid/main"
 #define GRIDPRGM		"main"
 #define MAXLEN			512
 
@@ -130,7 +130,7 @@ int main(int argc, char * argv[])
 		// child process
 		argvChild[1] = argv[1];
         execv(GRIDPATH, argvChild);
-        printf("[ERROR] An error occured during execv: %s\n", strerror(errno));
+        printf("[ERROR] An error occured during execv: %s\n\t%s not found\n", strerror(errno), GRIDPATH);
 		return 1;
     }
     else

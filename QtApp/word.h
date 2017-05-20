@@ -1,5 +1,5 @@
-#ifndef _WORD_H_
-#define _WORD_H_
+#ifndef WORD_H
+#define WORD_H
 
 #define CHARSIZE		(4)
 
@@ -41,4 +41,11 @@ int cmpWaUS(word_t * word, unsigned char * in, int inLen);
 */
 int getUCLen(unsigned char * array, int maxLen);
 
-#endif // _WORD_H_
+/* Get words from input file
+** filename:    input file name
+** words:       array to store words
+** returns whether an error occured or not
+*/
+int getWords(char * filename, words_t * words);
+
+#endif // WORD_H

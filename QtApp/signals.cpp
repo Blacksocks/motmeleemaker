@@ -5,8 +5,6 @@
 
 void createSignals(MainWindow * mainwindow)
 {
-    // submit signal
-    QObject::connect(mainwindow->getSubmitBtn(), SIGNAL(clicked()), mainwindow, SLOT(slotBtnSubmit()));
     // translate signals
     QSignalMapper * mapper = new QSignalMapper(mainwindow);
     QVBoxLayout * answersLayout = (QVBoxLayout *)mainwindow->centralWidget()->layout()->itemAt(1);
@@ -17,4 +15,8 @@ void createSignals(MainWindow * mainwindow)
         mapper->setMapping(btn, i);
     }
     QObject::connect(mapper, SIGNAL(mapped(int)), mainwindow, SLOT(slotTranslateBtn(int)));
+    QObject::connect(mainwindow->getSubmitBtn(), SIGNAL(clicked()), mainwindow, SLOT(slotBtnSubmit()));
+    QObject::connect(mainwindow->getRestartBtn(), SIGNAL(clicked()), mainwindow, SLOT(slotBtnRestart()));
+    QObject::connect(mainwindow->getAnswersBtn(), SIGNAL(clicked()), mainwindow, SLOT(slotBtnAnswers()));
+    QObject::connect(mainwindow->getBrowseBtn(), SIGNAL(clicked()), mainwindow, SLOT(slotBtnBrowse()));
 }

@@ -23,6 +23,10 @@ public:
     QPushButton *   getAnswerBtn(int i);
     QLabel *        getAnswerLabel(int i);
     int             showAnswer(QString label);
+    QPushButton *   getRestartBtn();
+    QPushButton *   getAnswersBtn();
+    QPushButton *   getBrowseBtn();
+    QGridLayout *   getGridLayout();
 
 private:
     Ui::MainWindow *ui;
@@ -30,6 +34,9 @@ private:
 private slots:
     void            slotBtnSubmit();
     void            slotTranslateBtn(int i);
+    void            slotBtnRestart();
+    void            slotBtnAnswers();
+    void            slotBtnBrowse();
 };
 
 #endif // MAINWINDOW_H

@@ -10,6 +10,14 @@
 
 using namespace std;
 
+/* Create all GUI layout
+*/
 QHBoxLayout * createLayout();
+
+/* Update grid
+** Set labels values into given grid (gridLayout)
+** gridLayout:  grid layout where labels are setted
+*/
+void updateGrid(QGridLayout * girdLayout);
 
 #endif // LAYOUT_H

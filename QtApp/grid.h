@@ -1,5 +1,5 @@
-#ifndef _GRID_H_
-#define _GRID_H_
+#ifndef GRID_H
+#define GRID_H
 
 #include "word.h"
 
@@ -20,4 +20,9 @@ typedef struct grid_s {
 */
 void displayGrid(grid_t * grid);
 
-#endif // _GRID_H_
+/* Create new grid from file (inputFileName) of words
+** returns whether an error occured or not
+*/
+int createGrid();
+
+#endif // GRID_H

@@ -1,6 +1,13 @@
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/wait.h>
 
+#include "grid.h"
 #include "word.h"
+#include "file.h"
 
 int nbOfBytesInChar(unsigned char val)
 {
@@ -46,4 +53,29 @@ int getUCLen(unsigned char * array, int maxLen)
         count++;
     }
     return count;
+}
+
+int getWords(char * filename, words_t * words)
+{
+    dim_t dim;
+    FILE * file = fopen(filename, "r");
+    if(!file)
+    {
+        printf("[ERROR] Traduction file \"%s\" error: %s\n", filename, strerror(errno));
+        return 1;
+    }
+    getDimFile(file, &dim);
+    word_t * wordArray = new word_t[dim.h];
+    int * wDim = new int[dim.h];
+    getWDimFile(file, wDim);
+    for(int i = 0; i < dim.h; i++)
+    {
+        wordArray[i].w = new char_t[wDim[i]];
+        wordArray[i].l = wDim[i];
+    }
+    getWords(file, wordArray);
+    //words = new words_t;
+    words->w = wordArray;
+    words->l = dim.h;
+    return 0;
 }
