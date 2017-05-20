@@ -74,7 +74,6 @@ int getWords(char * filename, words_t * words)
         wordArray[i].l = wDim[i];
     }
     getWords(file, wordArray);
-    //words = new words_t;
     words->w = wordArray;
     words->l = dim.h;
     return 0;

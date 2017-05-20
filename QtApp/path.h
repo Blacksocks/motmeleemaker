@@ -3,8 +3,8 @@
 
 #define PROJPATH        "../"
 #define OUTFILE			PROJPATH "out.txt"
-#define INFILE          PROJPATH "in.txt"
-#define TRADFILE        PROJPATH "fr.txt"
+#define INFILE          PROJPATH "example1.txt"
+#define TRADFILE        PROJPATH "example1.trad"
 #define GRIDPATH		PROJPATH "grid/"
 #define GRIDPRGM		GRIDPATH "main"
 

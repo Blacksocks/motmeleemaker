@@ -73,15 +73,3 @@ QGridLayout * MainWindow::getGridLayout()
 {
     return (QGridLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(0)->layout();
 }
-
-int MainWindow::showAnswer(QString label)
-{
-    QVBoxLayout * answersLayout = getAnswerLayout();
-    for(int i = 0; i < answers.size(); i++)
-        if(answers.at(i)->compare(label) == 0)
-        {
-            answersLayout->itemAt(i)->widget()->show();
-            return 1;
-        }
-    return 0;
-}

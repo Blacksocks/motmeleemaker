@@ -12,6 +12,7 @@
 
 extern grid_t * grid;
 extern char * inputFileName;
+extern char * tradFileName;
 extern words_t * outWords;
 extern words_t * inWords;
 
@@ -103,13 +104,13 @@ int createGrid()
 
     // Get words array
     outWords = new words_t;
-    if(getWords(TRADFILE, outWords))
+    if(getWords(tradFileName, outWords))
         return 1;
     printf("[INFO] Translation words successfully loaded\n");
 
     // Get words array
     inWords = new words_t;
-    if(getWords(INFILE, inWords))
+    if(getWords(inputFileName, inWords))
         return 1;
     printf("[INFO] Input words successfully loaded\n");
 

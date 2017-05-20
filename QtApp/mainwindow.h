@@ -22,7 +22,6 @@ public:
     QVBoxLayout *   getAnswerLayout();
     QPushButton *   getAnswerBtn(int i);
     QLabel *        getAnswerLabel(int i);
-    int             showAnswer(QString label);
     QPushButton *   getRestartBtn();
     QPushButton *   getAnswersBtn();
     QPushButton *   getBrowseBtn();

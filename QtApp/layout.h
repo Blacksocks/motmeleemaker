@@ -20,4 +20,13 @@ QHBoxLayout * createLayout();
 */
 void updateGrid(QGridLayout * girdLayout);
 
+/* Update answers layout
+** answersLayout: layout to be updated
+*/
+void updateAnswersLayout(QVBoxLayout * answersLayout);
+
+/* Set input words list from inWords global variable
+*/
+void setInputWords();
+
 #endif // LAYOUT_H

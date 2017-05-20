@@ -4,7 +4,7 @@ SRCS = word.c grid.c file.c main.c
 OBJS = $(subst .c,.o,$(SRCS))
 EXE = main
 OUT = ../out.txt
-PARAMS = ../in.txt $(OUT)
+PARAMS = ../example1.txt $(OUT)
 
 .PHONY : all run db clean
 

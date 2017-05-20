@@ -13,6 +13,64 @@ extern words_t * outWords;
 QList<QString *> input;
 QList<QString *> answers;
 
+/* CLear layout children
+** layout: layout parent
+*/
+void clearLayout(QLayout* layout)
+{
+    while(QLayoutItem* item = layout->takeAt(0))
+    {
+        if (QWidget* widget = item->widget())
+            delete widget;
+        if (QLayout* childLayout = item->layout())
+            clearLayout(childLayout);
+        delete item;
+    }
+}
+
+/* Create answers layout
+*/
+void createAnswersLayout(QVBoxLayout * answersLayout)
+{
+    QTextCodec * codec = QTextCodec::codecForName("UTF-8");
+    for(int i = 0; i < outWords->l; i++)
+    {
+        QHBoxLayout * answerLayout = new QHBoxLayout;
+        QString * str = new QString("");
+        for(int j = 0; j < outWords->w[i].l; j++)
+            str->append(codec->toUnicode((char*)outWords->w[i].w[j].c, nbOfBytesInChar(outWords->w[i].w[j].c[0])));
+        QLabel * answerText = new QLabel(*str);
+        answerText->setFixedHeight(ANSWER_BTN_HEIGHT);
+        answers.push_back(str);
+        QPushButton * answerBtn = new QPushButton("Translate");
+        answerBtn->setFixedSize(ANSWER_BTN_WIDTH, ANSWER_BTN_HEIGHT);
+        answerLayout->addWidget(answerText);
+        answerLayout->addStretch();
+        answerLayout->addWidget(answerBtn);
+        QWidget * answer = new QWidget();
+        answer->setLayout(answerLayout);
+        answer->hide();
+        answerLayout->setContentsMargins(0, 0, 0, 0);
+        answersLayout->addWidget(answer);
+    }
+    answersLayout->addStretch();
+}
+
+void setInputWords()
+{
+    QTextCodec * codec = QTextCodec::codecForName("UTF-8");
+    input.clear();
+    // set input words list
+    for(int i = 0; i < inWords->l; i++)
+    {
+        QString * str = new QString("");
+        for(int j = 0; j < inWords->w[i].l; j++)
+            str->append(codec->toUnicode((char*)inWords->w[i].w[j].c, nbOfBytesInChar(inWords->w[i].w[j].c[0])));
+        input.push_back(str);
+    }
+}
+
+
 QHBoxLayout * createLayout()
 {
     int gridW = grid->d.w;
@@ -51,36 +109,8 @@ QHBoxLayout * createLayout()
 
     // set anwers layout
     QVBoxLayout * answersLayout = new QVBoxLayout;
-    for(int i = 0; i < outWords->l; i++)
-    {
-        QHBoxLayout * answerLayout = new QHBoxLayout;
-        QString * str = new QString("");
-        for(int j = 0; j < outWords->w[i].l; j++)
-            str->append(codec->toUnicode((char*)outWords->w[i].w[j].c, nbOfBytesInChar(outWords->w[i].w[j].c[0])));
-        QLabel * answerText = new QLabel(*str);
-        answerText->setFixedHeight(ANSWER_BTN_HEIGHT);
-        answers.push_back(str);
-        QPushButton * answerBtn = new QPushButton("Translate");
-        answerBtn->setFixedSize(ANSWER_BTN_WIDTH, ANSWER_BTN_HEIGHT);
-        answerLayout->addWidget(answerText);
-        answerLayout->addStretch();
-        answerLayout->addWidget(answerBtn);
-        QWidget * answer = new QWidget();
-        answer->setLayout(answerLayout);
-        answer->hide();
-        answerLayout->setContentsMargins(0, 0, 0, 0);
-        answersLayout->addWidget(answer);
-    }
-    answersLayout->addStretch();
-
-    // set input words list
-    for(int i = 0; i < inWords->l; i++)
-    {
-        QString * str = new QString("");
-        for(int j = 0; j < inWords->w[i].l; j++)
-            str->append(codec->toUnicode((char*)inWords->w[i].w[j].c, nbOfBytesInChar(inWords->w[i].w[j].c[0])));
-        input.push_back(str);
-    }
+    createAnswersLayout(answersLayout);
+    setInputWords();
 
     // set layout
     QHBoxLayout * layout = new QHBoxLayout;
@@ -95,8 +125,6 @@ QHBoxLayout * createLayout()
 
     return layout;
 }
-
-#include "stdio.h"
 
 void updateGrid(QGridLayout * gridLayout)
 {
@@ -126,4 +154,13 @@ void updateGrid(QGridLayout * gridLayout)
     parent->removeItem(gridLayout);
     delete gridLayout;
     parent->insertLayout(0, newGridLayout);
+}
+
+void updateAnswersLayout(QVBoxLayout * answersLayout)
+{
+    answers.clear();
+    // remove previous layout
+    clearLayout(answersLayout);
+    // create new layout
+    createAnswersLayout(answersLayout);
 }
