@@ -21,7 +21,8 @@
 #define GRIDPRGM		GRIDPATH "main"
 
 grid_t * grid;
-words_t * words;
+words_t * outWords;
+words_t * inWords;
 
 static char * argvChild[] = {GRIDPRGM, INFILE, OUTFILE, NULL};
 
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
     grid->d = g_dim;
     printf("[INFO] Grid successfully loaded\n");
 
-    // Get words array
+    // Get answers array
     dim_t dim;
     file = fopen(TRADFILE, "r");
     if(!file)
@@ -94,9 +95,31 @@ int main(int argc, char *argv[])
         wordArray[i].l = wDim[i];
     }
     getWords(file, wordArray);
-    words = new words_t;
-    words->w = wordArray;
-    words->l = dim.h;
+    outWords = new words_t;
+    outWords->w = wordArray;
+    outWords->l = dim.h;
+
+    // Get input words array
+    dim;
+    file = fopen(INFILE, "r");
+    if(!file)
+    {
+        printf("[ERROR] Input words file \"%s\" error: %s\n", INFILE, strerror(errno));
+        return 1;
+    }
+    getDimFile(file, &dim);
+    wordArray = new word_t[dim.h];
+    wDim = new int[dim.h];
+    getWDimFile(file, wDim);
+    for(int i = 0; i < dim.h; i++)
+    {
+        wordArray[i].w = new char_t[wDim[i]];
+        wordArray[i].l = wDim[i];
+    }
+    getWords(file, wordArray);
+    inWords = new words_t;
+    inWords->w = wordArray;
+    inWords->l = dim.h;
 
     // GUI
     QApplication a(argc, argv);

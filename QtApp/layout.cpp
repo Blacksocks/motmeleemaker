@@ -8,7 +8,9 @@
 #include "grid.h"
 
 extern grid_t * grid;
-extern words_t * words;
+extern words_t * inWords;
+extern words_t * outWords;
+QList<QString *> input;
 QList<QString *> answers;
 
 QHBoxLayout * createLayout()
@@ -49,12 +51,12 @@ QHBoxLayout * createLayout()
 
     // set anwers layout
     QVBoxLayout * answersLayout = new QVBoxLayout;
-    for(int i = 0; i < words->l; i++)
+    for(int i = 0; i < outWords->l; i++)
     {
         QHBoxLayout * answerLayout = new QHBoxLayout;
         QString * str = new QString("");
-        for(int j = 0; j < words->w[i].l; j++)
-            str->append(codec->toUnicode((char*)words->w[i].w[j].c, nbOfBytesInChar(words->w[i].w[j].c[0])));
+        for(int j = 0; j < outWords->w[i].l; j++)
+            str->append(codec->toUnicode((char*)outWords->w[i].w[j].c, nbOfBytesInChar(outWords->w[i].w[j].c[0])));
         QLabel * answerText = new QLabel(*str);
         answerText->setFixedHeight(ANSWER_BTN_HEIGHT);
         answers.push_back(str);
@@ -70,6 +72,15 @@ QHBoxLayout * createLayout()
         answersLayout->addWidget(answer);
     }
     answersLayout->addStretch();
+
+    // set input words list
+    for(int i = 0; i < inWords->l; i++)
+    {
+        QString * str = new QString("");
+        for(int j = 0; j < inWords->w[i].l; j++)
+            str->append(codec->toUnicode((char*)inWords->w[i].w[j].c, nbOfBytesInChar(inWords->w[i].w[j].c[0])));
+        input.push_back(str);
+    }
 
     // set layout
     QHBoxLayout * layout = new QHBoxLayout;

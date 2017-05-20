@@ -1,4 +1,3 @@
-#include <QLayout>
 #include <QLineEdit>
 
 #include "mainwindow.h"
@@ -38,9 +37,26 @@ QString MainWindow::getInputText()
     return ((QLineEdit *)((QHBoxLayout *)((QVBoxLayout *)((QVBoxLayout *)this->centralWidget()->layout()->itemAt(0))->itemAt(1))->itemAt(0))->itemAt(0)->widget())->text();
 }
 
+QVBoxLayout * MainWindow::getAnswerLayout()
+{
+    return (QVBoxLayout *)this->centralWidget()->layout()->itemAt(1);
+}
+
+QPushButton * MainWindow::getAnswerBtn(int i)
+{
+    QHBoxLayout * lay = (QHBoxLayout *)((QWidget *)getAnswerLayout()->itemAt(i)->widget())->layout();
+    return (QPushButton *)(lay->itemAt(2)->widget());
+}
+
+QLabel * MainWindow::getAnswerLabel(int i)
+{
+    QHBoxLayout * lay = (QHBoxLayout *)((QWidget *)getAnswerLayout()->itemAt(i)->widget())->layout();
+    return (QLabel *)(lay->itemAt(0)->widget());
+}
+
 int MainWindow::showAnswer(QString label)
 {
-    QVBoxLayout * answersLayout = (QVBoxLayout *)this->centralWidget()->layout()->itemAt(1);
+    QVBoxLayout * answersLayout = getAnswerLayout();
     for(int i = 0; i < answers.size(); i++)
         if(answers.at(i)->compare(label) == 0)
         {
